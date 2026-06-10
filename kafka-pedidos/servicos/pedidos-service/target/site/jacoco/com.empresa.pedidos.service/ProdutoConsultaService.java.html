@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProdutoConsultaService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pedidos-service</a> &gt; <a href="index.source.html" class="el_package">com.empresa.pedidos.service</a> &gt; <span class="el_source">ProdutoConsultaService.java</span></div><h1>ProdutoConsultaService.java</h1><pre class="source lang-java linenums">package com.empresa.pedidos.service;
+
+import com.empresa.pedidos.cache.ProdutoCacheService;
+import com.empresa.pedidos.dto.ProdutoCacheDto;
+import com.empresa.pedidos.entity.Produto;
+import com.empresa.pedidos.exception.DatabaseException;
+import com.empresa.pedidos.exception.ValidationException;
+import com.empresa.pedidos.mapper.PedidoMapper;
+import com.empresa.pedidos.repository.ProdutoRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+<span class="fc" id="L14">@Slf4j</span>
+@Service
+@RequiredArgsConstructor
+public class ProdutoConsultaService {
+
+    private static final String ATIVO = &quot;S&quot;;
+
+    private final ProdutoCacheService produtoCacheService;
+    private final ProdutoRepository produtoRepository;
+    private final PedidoMapper pedidoMapper;
+
+    public ProdutoCacheDto buscarProdutoAtivo(Long codigoProduto) {
+<span class="fc" id="L26">        var cache = produtoCacheService.buscarPorId(codigoProduto);</span>
+<span class="fc bfc" id="L27" title="All 2 branches covered.">        if (cache.isPresent()) {</span>
+<span class="fc" id="L28">            ProdutoCacheDto produto = cache.get();</span>
+<span class="fc" id="L29">            validarAtivo(produto, codigoProduto);</span>
+<span class="fc" id="L30">            log.debug(&quot;Produto {} encontrado no Redis&quot;, codigoProduto);</span>
+<span class="fc" id="L31">            return produto;</span>
+        }
+
+        try {
+<span class="fc" id="L35">            Produto produto = produtoRepository.findAtivoById(codigoProduto)</span>
+<span class="fc" id="L36">                    .orElseThrow(() -&gt; new ValidationException(</span>
+                            &quot;Produto inativo ou nao encontrado: &quot; + codigoProduto));
+<span class="fc" id="L38">            ProdutoCacheDto cacheDto = pedidoMapper.toCacheDto(produto);</span>
+<span class="fc" id="L39">            produtoCacheService.salvarProduto(cacheDto);</span>
+<span class="fc" id="L40">            log.debug(&quot;Produto {} carregado do banco e atualizado no Redis&quot;, codigoProduto);</span>
+<span class="fc" id="L41">            return cacheDto;</span>
+<span class="fc" id="L42">        } catch (ValidationException ex) {</span>
+<span class="fc" id="L43">            throw ex;</span>
+<span class="fc" id="L44">        } catch (Exception ex) {</span>
+<span class="fc" id="L45">            throw new DatabaseException(&quot;Erro ao consultar produto: &quot; + codigoProduto, ex);</span>
+        }
+    }
+
+    private void validarAtivo(ProdutoCacheDto produto, Long codigoProduto) {
+<span class="fc bfc" id="L50" title="All 2 branches covered.">        if (!ATIVO.equals(produto.ativo())) {</span>
+<span class="fc" id="L51">            throw new ValidationException(&quot;Produto inativo ou nao encontrado: &quot; + codigoProduto);</span>
+        }
+<span class="fc" id="L53">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

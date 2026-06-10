@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProdutoCacheService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pedidos-service</a> &gt; <a href="index.source.html" class="el_package">com.empresa.pedidos.cache</a> &gt; <span class="el_source">ProdutoCacheService.java</span></div><h1>ProdutoCacheService.java</h1><pre class="source lang-java linenums">package com.empresa.pedidos.cache;
+
+import com.empresa.pedidos.config.RedisProperties;
+import com.empresa.pedidos.dto.ProdutoCacheDto;
+import com.empresa.pedidos.exception.RedisException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.stereotype.Service;
+
+import java.time.Duration;
+import java.util.Optional;
+
+<span class="fc" id="L19">@Slf4j</span>
+@Service
+@RequiredArgsConstructor
+public class ProdutoCacheService {
+
+    private final RedisTemplate&lt;String, String&gt; redisTemplate;
+    private final ObjectMapper objectMapper;
+    private final RedisProperties redisProperties;
+
+    @Retryable(
+            retryFor = RedisException.class,
+            maxAttemptsExpression = &quot;${app.redis.retry.max-attempts:3}&quot;,
+            backoff = @Backoff(
+                    delayExpression = &quot;${app.redis.retry.initial-delay-ms:500}&quot;,
+                    multiplierExpression = &quot;${app.redis.retry.multiplier:2.0}&quot;
+            )
+    )
+    public Optional&lt;ProdutoCacheDto&gt; buscarPorId(Long id) {
+        try {
+<span class="fc" id="L38">            String json = redisTemplate.opsForValue().get(CacheKeyConstants.produtoKey(id));</span>
+<span class="pc bpc" id="L39" title="1 of 4 branches missed.">            if (json == null || json.isBlank()) {</span>
+<span class="fc" id="L40">                return Optional.empty();</span>
+            }
+<span class="fc" id="L42">            return Optional.of(objectMapper.readValue(json, ProdutoCacheDto.class));</span>
+<span class="fc" id="L43">        } catch (Exception ex) {</span>
+<span class="fc" id="L44">            throw new RedisException(&quot;Erro ao consultar produto no Redis: &quot; + id, ex);</span>
+        }
+    }
+
+    @Recover
+    public Optional&lt;ProdutoCacheDto&gt; recoverBuscarPorId(RedisException ex, Long id) {
+<span class="fc" id="L50">        log.warn(&quot;Fallback Redis ao buscar produto {}: {}&quot;, id, ex.getMessage());</span>
+<span class="fc" id="L51">        return Optional.empty();</span>
+    }
+
+    @Retryable(
+            retryFor = RedisException.class,
+            maxAttemptsExpression = &quot;${app.redis.retry.max-attempts:3}&quot;,
+            backoff = @Backoff(
+                    delayExpression = &quot;${app.redis.retry.initial-delay-ms:500}&quot;,
+                    multiplierExpression = &quot;${app.redis.retry.multiplier:2.0}&quot;
+            )
+    )
+    public void salvarProduto(ProdutoCacheDto produto) {
+        try {
+<span class="fc" id="L64">            String json = objectMapper.writeValueAsString(produto);</span>
+<span class="fc" id="L65">            redisTemplate.opsForValue().set(</span>
+<span class="fc" id="L66">                    CacheKeyConstants.produtoKey(produto.codigoProduto()),</span>
+                    json,
+<span class="fc" id="L68">                    ttlDuration()</span>
+            );
+<span class="nc" id="L70">        } catch (JsonProcessingException ex) {</span>
+<span class="nc" id="L71">            throw new RedisException(&quot;Erro ao serializar produto para Redis&quot;, ex);</span>
+<span class="fc" id="L72">        } catch (Exception ex) {</span>
+<span class="fc" id="L73">            throw new RedisException(&quot;Erro ao salvar produto no Redis&quot;, ex);</span>
+<span class="fc" id="L74">        }</span>
+<span class="fc" id="L75">    }</span>
+
+    @Recover
+    public void recoverSalvarProduto(RedisException ex, ProdutoCacheDto produto) {
+<span class="fc" id="L79">        log.warn(&quot;Fallback Redis ao salvar produto {}: {}&quot;, produto.codigoProduto(), ex.getMessage());</span>
+<span class="fc" id="L80">    }</span>
+
+    private Duration ttlDuration() {
+<span class="fc" id="L83">        return Duration.ofMinutes(redisProperties.getTtlMinutes());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
