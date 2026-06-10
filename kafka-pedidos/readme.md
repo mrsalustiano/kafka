@@ -1,7 +1,5 @@
 # kafka Project
 
-
-
 ## **Estrutura gerada**
 
 kafka-pedidos/
@@ -16,25 +14,27 @@ kafka-pedidos/
 
 └── servicos/
 
-    ├── clientes-service/
+```
+├── clientes-service/
 
-    │   ├── pom.xml
+│   ├── pom.xml
 
-    │   ├── Dockerfile
+│   ├── Dockerfile
 
-    │   └── src/
+│   └── src/
 
-    │       ├── main/java/
+│       ├── main/java/
 
-    │       ├── main/resources/
+│       ├── main/resources/
 
-    │       └── test/java/
+│       └── test/java/
 
-    ├── produtos-service/            (mesma estrutura)
+├── produtos-service/            (mesma estrutura)
 
-    ├── pedidos-service/             (mesma estrutura)
+├── pedidos-service/             (mesma estrutura)
 
-    └── broker-service/              (mesma estrutura)
+└── broker-service/              (mesma estrutura)
+```
 
 ## **Arquivos criados**
 
@@ -108,4 +108,73 @@ O `start` e o `reset` aguardam o Kafka ficar saudável e executam a criação do
 - Kafka UI: [http://localhost:8080](http://localhost:8080)
 - Redis Insight: [http://localhost:5540](http://localhost:5540)
 - SonarQube: [http://localhost:9000](http://localhost:9000) (login padrão: `admin` / `admin`)
+
+
+
+Migrations Flyway criadas conforme a skill **kafka-pedidos**, compatíveis com **MySQL 8**.
+
+## **Localização**
+
+infraestrutura/mysql/flyway/
+
+├── V1__create_clientes.sql
+
+├── V2__create_produtos.sql
+
+├── V3__create_pedidos.sql
+
+├── V4__create_pagamentos.sql
+
+├── V5__create_auditoria.sql
+
+└── V6__create_mensagens_processadas.sql
+
+## **Resumo do schema**
+
+
+| **Migration** | **Tabela**              | **Relacionamentos**                    |
+| ------------- | ----------------------- | -------------------------------------- |
+| V1            | `clientes`              | —                                      |
+| V2            | `produtos`              | —                                      |
+| V3            | `pedidos`               | FK → `clientes`, `produtos`            |
+| V4            | `pagamentos`            | FK → `pedidos` (1:1)                   |
+| V5            | `auditoria`             | —                                      |
+| V6            | `mensagens_processadas` | `event_id` UNIQUE (idempotência Kafka) |
+
+
+## **Constraints aplicadas**
+
+- `clientes` **/** `produtos`: `ativo IN ('S', 'N')`
+- `produtos`: `valor > 0`
+- `pedidos`: `quantidade > 0`, `valor_unitario > 0`, status enum da skill
+- `pagamentos`: `tipo_pagamento IN ('CC', 'DEBITO', 'BOLETO', 'PIX')`
+- **Foreign keys**: `ON DELETE RESTRICT` (pedidos não podem ser excluídos em cascata)
+- **Engine**: `InnoDB`, charset `utf8mb4_unicode_ci`
+
+## **Índices recomendados**
+
+- **clientes**: `ativo`, `email`, `nome`, `data_criacao`
+- **produtos**: `ativo`, `descricao`, `data_criacao`
+- **pedidos**: `codigo_cliente`, `codigo_produto`, `status`, `data_pedido`, `data_criacao`, composto `(codigo_cliente, status)`
+- **pagamentos**: `tipo_pagamento`, `efetivado`
+- **auditoria**: `data_evento`, `operacao`, `entidade`, `id_entidade`, `correlation_id`, composto `(entidade, id_entidade)`
+- **mensagens_processadas**: `data_processamento` (+ UNIQUE em `event_id`)
+
+## **Execução manual (Flyway CLI ou MySQL)**
+
+Com a infraestrutura rodando:
+
+cd infraestrutura
+
+docker compose up -d mysql
+
+*# via cliente MySQL*
+
+docker exec -i kafka-pedidos-mysql mysql -ukafka_user -pkafka_pass kafka_pedidos \
+
+< mysql/flyway/V1__create_clientes.sql
+
+*# ... repetir V2 a V6 na ordem*
+
+Quando os microsserviços forem implementados, aponte o Flyway para `classpath:db/migration` (copiando estes arquivos) ou configure `spring.flyway.locations=filesystem:../../infraestrutura/mysql/flyway` no serviço que executará as migrations.
 
