@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CorrelationIdFilter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">produtos-service</a> &gt; <a href="index.source.html" class="el_package">com.empresa.produtos.config</a> &gt; <span class="el_source">CorrelationIdFilter.java</span></div><h1>CorrelationIdFilter.java</h1><pre class="source lang-java linenums">package com.empresa.produtos.config;
+
+import com.empresa.produtos.util.CorrelationIdUtil;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+import java.util.UUID;
+
+@Component
+@Order(Ordered.HIGHEST_PRECEDENCE)
+<span class="fc" id="L20">public class CorrelationIdFilter extends OncePerRequestFilter {</span>
+
+    @Value(&quot;${app.correlation-id.header}&quot;)
+    private String correlationHeader;
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
+        try {
+<span class="fc" id="L29">            String correlationId = request.getHeader(correlationHeader);</span>
+<span class="pc bpc" id="L30" title="1 of 4 branches missed.">            if (correlationId == null || correlationId.isBlank()) {</span>
+<span class="fc" id="L31">                correlationId = UUID.randomUUID().toString();</span>
+            }
+<span class="fc" id="L33">            CorrelationIdUtil.set(correlationId);</span>
+<span class="fc" id="L34">            MDC.put(&quot;correlationId&quot;, correlationId);</span>
+<span class="fc" id="L35">            response.setHeader(correlationHeader, correlationId);</span>
+<span class="fc" id="L36">            filterChain.doFilter(request, response);</span>
+        } finally {
+<span class="fc" id="L38">            CorrelationIdUtil.clear();</span>
+<span class="fc" id="L39">            MDC.remove(&quot;correlationId&quot;);</span>
+        }
+<span class="fc" id="L41">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
