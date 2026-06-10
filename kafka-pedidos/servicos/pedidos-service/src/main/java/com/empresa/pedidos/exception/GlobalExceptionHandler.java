@@ -2,6 +2,7 @@ package com.empresa.pedidos.exception;
 
 import com.empresa.pedidos.util.CorrelationIdUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -13,6 +14,9 @@ import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @Value("${app.correlation-id.header}")
+    private String correlationHeader;
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFound(NotFoundException ex, HttpServletRequest request) {
@@ -70,13 +74,16 @@ public class GlobalExceptionHandler {
 
     private ResponseEntity<ErrorResponse> buildResponse(HttpStatus status, String message,
                                                           HttpServletRequest request) {
+        String correlationId = CorrelationIdUtil.getOrGenerate();
         ErrorResponse body = new ErrorResponse(
                 LocalDateTime.now(),
                 status.value(),
                 message,
                 request.getRequestURI(),
-                CorrelationIdUtil.get()
+                correlationId
         );
-        return ResponseEntity.status(status).body(body);
+        return ResponseEntity.status(status)
+                .header(correlationHeader, correlationId)
+                .body(body);
     }
 }

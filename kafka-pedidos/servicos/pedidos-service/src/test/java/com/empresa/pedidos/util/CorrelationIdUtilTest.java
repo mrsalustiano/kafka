@@ -20,4 +20,25 @@ class CorrelationIdUtilTest {
         CorrelationIdUtil.clear();
         assertThat(CorrelationIdUtil.get()).isNull();
     }
+
+    @Test
+    void resolveOrGenerate_comHeader_deveRetornarTrimado() {
+        assertThat(CorrelationIdUtil.resolveOrGenerate("  corr-1  ")).isEqualTo("corr-1");
+    }
+
+    @Test
+    void resolveOrGenerate_semHeader_deveGerarUuid() {
+        assertThat(CorrelationIdUtil.resolveOrGenerate("  ")).isNotBlank();
+    }
+
+    @Test
+    void getOrGenerate_quandoDefinido_deveRetornarValor() {
+        CorrelationIdUtil.set("corr-2");
+        assertThat(CorrelationIdUtil.getOrGenerate()).isEqualTo("corr-2");
+    }
+
+    @Test
+    void getOrGenerate_quandoAusente_deveGerarUuid() {
+        assertThat(CorrelationIdUtil.getOrGenerate()).isNotBlank();
+    }
 }

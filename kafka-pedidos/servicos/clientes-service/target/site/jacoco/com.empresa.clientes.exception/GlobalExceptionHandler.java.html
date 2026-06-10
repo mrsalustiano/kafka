@@ -2,6 +2,7 @@
 
 import com.empresa.clientes.util.CorrelationIdUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -12,67 +13,73 @@ import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
-<span class="fc" id="L15">public class GlobalExceptionHandler {</span>
+<span class="fc" id="L16">public class GlobalExceptionHandler {</span>
+
+    @Value(&quot;${app.correlation-id.header}&quot;)
+    private String correlationHeader;
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity&lt;ErrorResponse&gt; handleNotFound(NotFoundException ex, HttpServletRequest request) {
-<span class="fc" id="L19">        return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage(), request);</span>
+<span class="fc" id="L23">        return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage(), request);</span>
     }
 
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity&lt;ErrorResponse&gt; handleValidation(ValidationException ex, HttpServletRequest request) {
-<span class="fc" id="L24">        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), request);</span>
+<span class="fc" id="L28">        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), request);</span>
     }
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity&lt;ErrorResponse&gt; handleBusiness(BusinessException ex, HttpServletRequest request) {
-<span class="fc" id="L29">        return buildResponse(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), request);</span>
+<span class="fc" id="L33">        return buildResponse(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), request);</span>
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity&lt;ErrorResponse&gt; handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
                                                                         HttpServletRequest request) {
-<span class="fc" id="L35">        String message = ex.getBindingResult().getFieldErrors().stream()</span>
-<span class="fc" id="L36">                .map(error -&gt; error.getField() + &quot;: &quot; + error.getDefaultMessage())</span>
-<span class="fc" id="L37">                .collect(Collectors.joining(&quot;, &quot;));</span>
-<span class="fc" id="L38">        return buildResponse(HttpStatus.BAD_REQUEST, message, request);</span>
+<span class="fc" id="L39">        String message = ex.getBindingResult().getFieldErrors().stream()</span>
+<span class="fc" id="L40">                .map(error -&gt; error.getField() + &quot;: &quot; + error.getDefaultMessage())</span>
+<span class="fc" id="L41">                .collect(Collectors.joining(&quot;, &quot;));</span>
+<span class="fc" id="L42">        return buildResponse(HttpStatus.BAD_REQUEST, message, request);</span>
     }
 
     @ExceptionHandler(DatabaseException.class)
     public ResponseEntity&lt;ErrorResponse&gt; handleDatabase(DatabaseException ex, HttpServletRequest request) {
-<span class="fc" id="L43">        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), request);</span>
+<span class="fc" id="L47">        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), request);</span>
     }
 
     @ExceptionHandler(KafkaPublishException.class)
     public ResponseEntity&lt;ErrorResponse&gt; handleKafkaPublish(KafkaPublishException ex, HttpServletRequest request) {
-<span class="fc" id="L48">        return buildResponse(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage(), request);</span>
+<span class="fc" id="L52">        return buildResponse(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage(), request);</span>
     }
 
     @ExceptionHandler(KafkaConsumeException.class)
     public ResponseEntity&lt;ErrorResponse&gt; handleKafkaConsume(KafkaConsumeException ex, HttpServletRequest request) {
-<span class="fc" id="L53">        return buildResponse(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage(), request);</span>
+<span class="fc" id="L57">        return buildResponse(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage(), request);</span>
     }
 
     @ExceptionHandler(TimeoutException.class)
     public ResponseEntity&lt;ErrorResponse&gt; handleTimeout(TimeoutException ex, HttpServletRequest request) {
-<span class="fc" id="L58">        return buildResponse(HttpStatus.GATEWAY_TIMEOUT, ex.getMessage(), request);</span>
+<span class="fc" id="L62">        return buildResponse(HttpStatus.GATEWAY_TIMEOUT, ex.getMessage(), request);</span>
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity&lt;ErrorResponse&gt; handleGeneric(Exception ex, HttpServletRequest request) {
-<span class="fc" id="L63">        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, &quot;Erro interno do servidor&quot;, request);</span>
+<span class="fc" id="L67">        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, &quot;Erro interno do servidor&quot;, request);</span>
     }
 
     private ResponseEntity&lt;ErrorResponse&gt; buildResponse(HttpStatus status, String message,
                                                           HttpServletRequest request) {
-<span class="fc" id="L68">        ErrorResponse body = new ErrorResponse(</span>
-<span class="fc" id="L69">                LocalDateTime.now(),</span>
-<span class="fc" id="L70">                status.value(),</span>
+<span class="fc" id="L72">        String correlationId = CorrelationIdUtil.getOrGenerate();</span>
+<span class="fc" id="L73">        ErrorResponse body = new ErrorResponse(</span>
+<span class="fc" id="L74">                LocalDateTime.now(),</span>
+<span class="fc" id="L75">                status.value(),</span>
                 message,
-<span class="fc" id="L72">                request.getRequestURI(),</span>
-<span class="fc" id="L73">                CorrelationIdUtil.get()</span>
+<span class="fc" id="L77">                request.getRequestURI(),</span>
+                correlationId
         );
-<span class="fc" id="L75">        return ResponseEntity.status(status).body(body);</span>
+<span class="fc" id="L80">        return ResponseEntity.status(status)</span>
+<span class="fc" id="L81">                .header(correlationHeader, correlationId)</span>
+<span class="fc" id="L82">                .body(body);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

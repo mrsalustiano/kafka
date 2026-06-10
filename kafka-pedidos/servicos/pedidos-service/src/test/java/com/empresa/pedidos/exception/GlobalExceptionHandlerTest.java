@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -31,6 +32,7 @@ class GlobalExceptionHandlerTest {
 
     @BeforeEach
     void setUp() {
+        ReflectionTestUtils.setField(handler, "correlationHeader", "X-Correlation-Id");
         CorrelationIdUtil.set("corr-123");
         when(request.getRequestURI()).thenReturn("/api/v1/pedidos/1");
     }
@@ -45,6 +47,15 @@ class GlobalExceptionHandlerTest {
         ResponseEntity<ErrorResponse> response = handler.handleNotFound(new NotFoundException("nao encontrado"), request);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(response.getBody().correlationId()).isEqualTo("corr-123");
+        assertThat(response.getHeaders().getFirst("X-Correlation-Id")).isEqualTo("corr-123");
+    }
+
+    @Test
+    void handleNotFound_semCorrelationIdNoContexto_deveGerarHeader() {
+        CorrelationIdUtil.clear();
+        ResponseEntity<ErrorResponse> response = handler.handleNotFound(
+                new NotFoundException("nao encontrado"), request);
+        assertThat(response.getHeaders().getFirst("X-Correlation-Id")).isNotBlank();
     }
 
     @Test

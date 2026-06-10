@@ -41,14 +41,9 @@ public class ClienteCreateConsumer {
     }
 
     private void definirCorrelationId(String correlationId, ClienteCreateEvent event) {
-        if (correlationId != null && !correlationId.isBlank()) {
-            CorrelationIdUtil.set(correlationId);
-            MDC.put("correlationId", correlationId);
-            return;
-        }
-        if (event.correlationId() != null && !event.correlationId().isBlank()) {
-            CorrelationIdUtil.set(event.correlationId());
-            MDC.put("correlationId", event.correlationId());
-        }
+        String resolved = CorrelationIdUtil.resolveOrGenerate(
+                correlationId != null && !correlationId.isBlank() ? correlationId : event.correlationId());
+        CorrelationIdUtil.set(resolved);
+        MDC.put("correlationId", resolved);
     }
 }

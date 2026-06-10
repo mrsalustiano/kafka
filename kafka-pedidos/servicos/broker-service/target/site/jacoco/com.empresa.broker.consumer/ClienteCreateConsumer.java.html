@@ -41,15 +41,10 @@ public class ClienteCreateConsumer {
 <span class="fc" id="L41">    }</span>
 
     private void definirCorrelationId(String correlationId, ClienteCreateEvent event) {
-<span class="fc bfc" id="L44" title="All 4 branches covered.">        if (correlationId != null &amp;&amp; !correlationId.isBlank()) {</span>
-<span class="fc" id="L45">            CorrelationIdUtil.set(correlationId);</span>
-<span class="fc" id="L46">            MDC.put(&quot;correlationId&quot;, correlationId);</span>
-<span class="fc" id="L47">            return;</span>
-        }
-<span class="pc bpc" id="L49" title="2 of 4 branches missed.">        if (event.correlationId() != null &amp;&amp; !event.correlationId().isBlank()) {</span>
-<span class="fc" id="L50">            CorrelationIdUtil.set(event.correlationId());</span>
-<span class="fc" id="L51">            MDC.put(&quot;correlationId&quot;, event.correlationId());</span>
-        }
-<span class="fc" id="L53">    }</span>
+<span class="fc" id="L44">        String resolved = CorrelationIdUtil.resolveOrGenerate(</span>
+<span class="fc bfc" id="L45" title="All 4 branches covered.">                correlationId != null &amp;&amp; !correlationId.isBlank() ? correlationId : event.correlationId());</span>
+<span class="fc" id="L46">        CorrelationIdUtil.set(resolved);</span>
+<span class="fc" id="L47">        MDC.put(&quot;correlationId&quot;, resolved);</span>
+<span class="fc" id="L48">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

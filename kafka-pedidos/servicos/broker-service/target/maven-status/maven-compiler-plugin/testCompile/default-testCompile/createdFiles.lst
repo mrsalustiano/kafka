@@ -1,5 +1,6 @@
 com\empresa\broker\config\ConfigBeansTest.class
 com\empresa\broker\producer\ClienteResponseProducerTest.class
+com\empresa\broker\config\CorrelationIdFilterTest.class
 com\empresa\broker\exception\ExceptionClassesTest.class
 com\empresa\broker\service\ClienteProcessamentoServiceTest.class
 com\empresa\broker\audit\AuditoriaServiceTest.class

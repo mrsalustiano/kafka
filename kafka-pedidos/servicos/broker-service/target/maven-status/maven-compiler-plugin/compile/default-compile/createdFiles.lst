@@ -10,6 +10,7 @@ com\empresa\broker\repository\MensagemProcessadaRepository.class
 com\empresa\broker\config\RepositoryConfig.class
 com\empresa\broker\config\KafkaProperties$Topics.class
 com\empresa\broker\BrokerServiceApplication.class
+com\empresa\broker\config\CorrelationIdFilter.class
 com\empresa\broker\exception\TimeoutException.class
 com\empresa\broker\service\ClienteProcessamentoService.class
 com\empresa\broker\service\IdempotenciaService.class

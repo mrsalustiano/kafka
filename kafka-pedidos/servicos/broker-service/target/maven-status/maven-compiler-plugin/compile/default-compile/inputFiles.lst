@@ -1,6 +1,7 @@
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\main\java\com\empresa\broker\audit\AuditoriaService.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\main\java\com\empresa\broker\audit\OperacaoAuditoria.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\main\java\com\empresa\broker\BrokerServiceApplication.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\main\java\com\empresa\broker\config\CorrelationIdFilter.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\main\java\com\empresa\broker\config\JdbiConfig.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\main\java\com\empresa\broker\config\KafkaConfig.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\main\java\com\empresa\broker\config\KafkaHealthIndicator.java

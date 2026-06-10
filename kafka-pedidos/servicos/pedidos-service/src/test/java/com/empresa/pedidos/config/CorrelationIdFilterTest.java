@@ -9,11 +9,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.MDC;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,6 +35,7 @@ class CorrelationIdFilterTest {
     @AfterEach
     void tearDown() {
         CorrelationIdUtil.clear();
+        MDC.clear();
     }
 
     @Test
@@ -57,5 +60,31 @@ class CorrelationIdFilterTest {
 
         assertThat(response.getHeader("X-Correlation-Id")).isNotBlank();
         verify(filterChain).doFilter(request, response);
+    }
+
+    @Test
+    void doFilterInternal_comHeaderBlank_deveGerarUuid() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("X-Correlation-Id", "   ");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        correlationIdFilter.doFilterInternal(request, response, filterChain);
+
+        assertThat(response.getHeader("X-Correlation-Id")).isNotBlank();
+    }
+
+    @Test
+    void doFilterInternal_duranteRequisicao_devePopularMdc() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("X-Correlation-Id", "corr-mdc");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        doAnswer(invocation -> {
+            assertThat(CorrelationIdUtil.get()).isEqualTo("corr-mdc");
+            assertThat(MDC.get("correlationId")).isEqualTo("corr-mdc");
+            return null;
+        }).when(filterChain).doFilter(request, response);
+
+        correlationIdFilter.doFilterInternal(request, response, filterChain);
     }
 }

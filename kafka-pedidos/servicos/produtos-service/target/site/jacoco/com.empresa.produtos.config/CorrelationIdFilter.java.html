@@ -13,11 +13,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.UUID;
 
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
-<span class="fc" id="L20">public class CorrelationIdFilter extends OncePerRequestFilter {</span>
+<span class="fc" id="L19">public class CorrelationIdFilter extends OncePerRequestFilter {</span>
 
     @Value(&quot;${app.correlation-id.header}&quot;)
     private String correlationHeader;
@@ -26,18 +25,15 @@ import java.util.UUID;
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         try {
-<span class="fc" id="L29">            String correlationId = request.getHeader(correlationHeader);</span>
-<span class="pc bpc" id="L30" title="1 of 4 branches missed.">            if (correlationId == null || correlationId.isBlank()) {</span>
-<span class="fc" id="L31">                correlationId = UUID.randomUUID().toString();</span>
-            }
-<span class="fc" id="L33">            CorrelationIdUtil.set(correlationId);</span>
-<span class="fc" id="L34">            MDC.put(&quot;correlationId&quot;, correlationId);</span>
-<span class="fc" id="L35">            response.setHeader(correlationHeader, correlationId);</span>
-<span class="fc" id="L36">            filterChain.doFilter(request, response);</span>
+<span class="fc" id="L28">            String correlationId = CorrelationIdUtil.resolveOrGenerate(request.getHeader(correlationHeader));</span>
+<span class="fc" id="L29">            CorrelationIdUtil.set(correlationId);</span>
+<span class="fc" id="L30">            MDC.put(&quot;correlationId&quot;, correlationId);</span>
+<span class="fc" id="L31">            response.setHeader(correlationHeader, correlationId);</span>
+<span class="fc" id="L32">            filterChain.doFilter(request, response);</span>
         } finally {
-<span class="fc" id="L38">            CorrelationIdUtil.clear();</span>
-<span class="fc" id="L39">            MDC.remove(&quot;correlationId&quot;);</span>
+<span class="fc" id="L34">            CorrelationIdUtil.clear();</span>
+<span class="fc" id="L35">            MDC.remove(&quot;correlationId&quot;);</span>
         }
-<span class="fc" id="L41">    }</span>
+<span class="fc" id="L37">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

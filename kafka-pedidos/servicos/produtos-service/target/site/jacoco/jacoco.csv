@@ -3,7 +3,7 @@ produtos-service,com.empresa.produtos.exception,NotFoundException,0,4,0,0,0,2,0,
 produtos-service,com.empresa.produtos.exception,ErrorResponse,0,18,0,0,0,1,0,1,0,1
 produtos-service,com.empresa.produtos.exception,DatabaseException,0,5,0,0,0,2,0,1,0,1
 produtos-service,com.empresa.produtos.exception,KafkaConsumeException,0,5,0,0,0,2,0,1,0,1
-produtos-service,com.empresa.produtos.exception,GlobalExceptionHandler,0,104,0,0,0,20,0,13,0,13
+produtos-service,com.empresa.produtos.exception,GlobalExceptionHandler,0,116,0,0,0,22,0,13,0,13
 produtos-service,com.empresa.produtos.exception,BusinessException,0,4,0,0,0,2,0,1,0,1
 produtos-service,com.empresa.produtos.exception,TimeoutException,0,9,0,0,0,4,0,2,0,2
 produtos-service,com.empresa.produtos.exception,KafkaPublishException,0,5,0,0,0,2,0,1,0,1
@@ -12,11 +12,11 @@ produtos-service,com.empresa.produtos.exception,ValidationException,0,4,0,0,0,2,
 produtos-service,com.empresa.produtos.audit,AuditoriaService,0,28,0,0,0,10,0,3,0,3
 produtos-service,com.empresa.produtos.audit,OperacaoAuditoria,0,33,0,0,0,6,0,1,0,1
 produtos-service,com.empresa.produtos.util,PageResponseUtil,3,124,6,22,0,19,6,12,0,4
-produtos-service,com.empresa.produtos.util,CorrelationIdUtil,0,16,0,0,0,6,0,4,0,4
+produtos-service,com.empresa.produtos.util,CorrelationIdUtil,0,36,0,6,0,11,0,9,0,6
 produtos-service,com.empresa.produtos.config,RedisConfig,0,71,0,0,0,22,0,5,0,5
 produtos-service,com.empresa.produtos.config,OpenApiConfig,0,23,0,0,0,7,0,2,0,2
 produtos-service,com.empresa.produtos.config,JdbiConfig,0,26,0,0,0,6,0,2,0,2
-produtos-service,com.empresa.produtos.config,CorrelationIdFilter,0,34,1,3,0,11,1,3,0,2
+produtos-service,com.empresa.produtos.config,CorrelationIdFilter,0,27,0,0,0,9,0,2,0,2
 produtos-service,com.empresa.produtos.config,RepositoryConfig,0,13,0,0,0,3,0,3,0,3
 produtos-service,com.empresa.produtos.config,RedisProperties.RetryProperties,0,12,0,0,0,4,0,1,0,1
 produtos-service,com.empresa.produtos.config,RedisProperties,0,14,0,0,0,4,0,1,0,1
