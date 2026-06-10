@@ -1,4 +1,5 @@
 GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+broker-service,com.empresa.broker.util,CpfUtil,7,95,6,12,2,19,6,7,0,4
 broker-service,com.empresa.broker.util,CorrelationIdUtil,0,36,0,6,0,11,0,9,0,6
 broker-service,com.empresa.broker.producer,ClienteResponseProducer,0,115,0,4,0,22,0,4,0,2
 broker-service,com.empresa.broker.audit,AuditoriaService,0,28,0,0,0,10,0,3,0,3
@@ -14,10 +15,10 @@ broker-service,com.empresa.broker.exception,GlobalExceptionHandler,0,116,0,0,0,2
 broker-service,com.empresa.broker.exception,KafkaPublishException,0,5,0,0,0,2,0,1,0,1
 broker-service,com.empresa.broker.exception,DatabaseException,0,5,0,0,0,2,0,1,0,1
 broker-service,com.empresa.broker.exception,NotFoundException,0,4,0,0,0,2,0,1,0,1
-broker-service,com.empresa.broker.dto,ClienteCreateEvent,0,30,0,0,0,1,0,1,0,1
+broker-service,com.empresa.broker.dto,ClienteCreateEvent,0,33,0,0,0,1,0,1,0,1
 broker-service,com.empresa.broker.dto,ClienteResponseEvent,0,12,0,0,0,1,0,1,0,1
 broker-service,com.empresa.broker.service,IdempotenciaService,0,27,0,0,0,8,0,2,0,2
-broker-service,com.empresa.broker.service,ClienteProcessamentoService,0,104,0,6,0,32,0,5,0,2
+broker-service,com.empresa.broker.service,ClienteProcessamentoService,0,122,0,8,0,36,0,6,0,2
 broker-service,com.empresa.broker.config,JdbiConfig,0,26,0,0,0,6,0,2,0,2
 broker-service,com.empresa.broker.config,KafkaProperties.Topics,0,15,0,0,0,1,0,1,0,1
 broker-service,com.empresa.broker.config,KafkaConfig,0,232,0,2,0,44,0,9,0,8

@@ -9,7 +9,9 @@ TOPICS=(
   "pedido-create"
   "pedido-response"
   "client-create-dlt"
+  "client-response-dlt"
   "pedido-create-dlt"
+  "pedido-response-dlt"
 )
 
 echo "Criando tópicos Kafka em ${BOOTSTRAP_SERVER}..."

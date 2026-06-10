@@ -29,3 +29,4 @@ D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\main\java\com\e
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\main\java\com\empresa\broker\service\ClienteProcessamentoService.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\main\java\com\empresa\broker\service\IdempotenciaService.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\main\java\com\empresa\broker\util\CorrelationIdUtil.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\main\java\com\empresa\broker\util\CpfUtil.java

@@ -36,10 +36,16 @@ public class ClienteController {
 <span class="fc" id="L36">        return ResponseEntity.status(HttpStatus.ACCEPTED).body(clienteService.solicitarCriacao(request));</span>
     }
 
+    @GetMapping(&quot;/cpf/{cpf}&quot;)
+    @Operation(summary = &quot;Buscar cliente por CPF&quot;)
+    public ResponseEntity&lt;ClienteResponse&gt; buscarPorCpf(@PathVariable String cpf) {
+<span class="fc" id="L42">        return ResponseEntity.ok(clienteService.buscarPorCpf(cpf));</span>
+    }
+
     @GetMapping(&quot;/{id}&quot;)
     @Operation(summary = &quot;Buscar cliente por ID&quot;)
     public ResponseEntity&lt;ClienteResponse&gt; buscarPorId(@PathVariable Long id) {
-<span class="fc" id="L42">        return ResponseEntity.ok(clienteService.buscarPorId(id));</span>
+<span class="fc" id="L48">        return ResponseEntity.ok(clienteService.buscarPorId(id));</span>
     }
 
     @GetMapping
@@ -48,27 +54,27 @@ public class ClienteController {
             @RequestParam(defaultValue = &quot;0&quot;) int page,
             @RequestParam(defaultValue = &quot;10&quot;) int size,
             @RequestParam(required = false) String sort) {
-<span class="fc" id="L51">        return ResponseEntity.ok(clienteService.listar(page, size, sort));</span>
+<span class="fc" id="L57">        return ResponseEntity.ok(clienteService.listar(page, size, sort));</span>
     }
 
     @PutMapping(&quot;/{id}&quot;)
     @Operation(summary = &quot;Atualizar cliente&quot;)
     public ResponseEntity&lt;ClienteResponse&gt; atualizar(@PathVariable Long id,
                                                      @Valid @RequestBody ClienteRequest request) {
-<span class="fc" id="L58">        return ResponseEntity.ok(clienteService.atualizar(id, request));</span>
+<span class="fc" id="L64">        return ResponseEntity.ok(clienteService.atualizar(id, request));</span>
     }
 
     @DeleteMapping(&quot;/{id}&quot;)
     @Operation(summary = &quot;Exclusao logica de cliente&quot;)
     public ResponseEntity&lt;Void&gt; excluir(@PathVariable Long id) {
-<span class="fc" id="L64">        clienteService.excluirLogicamente(id);</span>
-<span class="fc" id="L65">        return ResponseEntity.noContent().build();</span>
+<span class="fc" id="L70">        clienteService.excluirLogicamente(id);</span>
+<span class="fc" id="L71">        return ResponseEntity.noContent().build();</span>
     }
 
     @GetMapping(&quot;/status/{id}&quot;)
     @Operation(summary = &quot;Consultar status de criacao do cliente&quot;)
     public ResponseEntity&lt;ClienteStatusResponse&gt; consultarStatus(@PathVariable Long id) {
-<span class="fc" id="L71">        return ResponseEntity.ok(clienteService.consultarStatus(id));</span>
+<span class="fc" id="L77">        return ResponseEntity.ok(clienteService.consultarStatus(id));</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

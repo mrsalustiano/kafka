@@ -45,5 +45,6 @@ D:\DEV\workspace\kafka\kafka-pedidos\servicos\pedidos-service\src\main\java\com\
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\pedidos-service\src\main\java\com\empresa\pedidos\service\PedidoService.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\pedidos-service\src\main\java\com\empresa\pedidos\service\ProdutoConsultaService.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\pedidos-service\src\main\java\com\empresa\pedidos\util\CorrelationIdUtil.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\pedidos-service\src\main\java\com\empresa\pedidos\util\CpfUtil.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\pedidos-service\src\main\java\com\empresa\pedidos\util\PageResponseUtil.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\pedidos-service\src\main\java\com\empresa\pedidos\util\PedidoStatusUtil.java

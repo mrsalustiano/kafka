@@ -35,9 +35,11 @@ class ClienteControllerTest {
     @InjectMocks
     private ClienteController clienteController;
 
-    private final ClienteRequest request = new ClienteRequest("Cliente", "Rua 1", "12345-000",
+    private static final String CPF_VALIDO = "52998224725";
+
+    private final ClienteRequest request = new ClienteRequest("Cliente", CPF_VALIDO, "Rua 1", "12345-000",
             "Sao Paulo", "SP", "a@test.com", "11999999999");
-    private final ClienteResponse response = new ClienteResponse(1L, "Cliente", "Rua 1", "12345-000",
+    private final ClienteResponse response = new ClienteResponse(1L, "Cliente", CPF_VALIDO, "Rua 1", "12345-000",
             "Sao Paulo", "SP", "a@test.com", "11999999999", "S", LocalDateTime.now(), null);
     private final ClienteAcceptedResponse acceptedResponse = new ClienteAcceptedResponse("evt-1", "corr-1", "ACEITO");
     private final ClienteStatusResponse statusResponse = new ClienteStatusResponse(1L, "CRIADO", LocalDateTime.now());
@@ -50,6 +52,16 @@ class ClienteControllerTest {
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.ACCEPTED);
         assertThat(result.getBody()).isEqualTo(acceptedResponse);
+    }
+
+    @Test
+    void buscarPorCpf_deveRetornar200() {
+        when(clienteService.buscarPorCpf(CPF_VALIDO)).thenReturn(response);
+
+        ResponseEntity<ClienteResponse> result = clienteController.buscarPorCpf(CPF_VALIDO);
+
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(result.getBody()).isEqualTo(response);
     }
 
     @Test

@@ -23,6 +23,7 @@ com\empresa\pedidos\dto\PedidoCreateEvent.class
 com\empresa\pedidos\dto\PedidoStatusRequest.class
 com\empresa\pedidos\config\KafkaConfig.class
 com\empresa\pedidos\mapper\PedidoMapper.class
+com\empresa\pedidos\util\CpfUtil.class
 com\empresa\pedidos\cache\CacheKeyConstants.class
 com\empresa\pedidos\mapper\PedidoMapperImpl.class
 com\empresa\pedidos\exception\ErrorResponse.class

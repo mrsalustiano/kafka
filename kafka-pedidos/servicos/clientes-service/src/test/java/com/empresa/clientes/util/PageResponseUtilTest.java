@@ -38,6 +38,7 @@ class PageResponseUtilTest {
     @Test
     void resolveSortColumn_valido() {
         assertThat(PageResponseUtil.resolveSortColumn("nome,asc")).isEqualTo("nome");
+        assertThat(PageResponseUtil.resolveSortColumn("cpf,asc")).isEqualTo("cpf");
     }
 
     @Test

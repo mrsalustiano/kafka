@@ -1,0 +1,47 @@
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+.idea_modules/
+atlassian-ide-plugin.xml
+
+# SonarQube / SonarScanner
+.scannerwork/
+.sonar/
+.sonarlint/
+report-task.txt
+**/target/sonar/
+
+# Eclipse (opcional, comum em projetos Java)
+.classpath
+.project
+.settings/
+bin/
+
+# VS Code (opcional)
+.vscode/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs e temporários
+*.log
+*.tmp
+*.swp
+*~

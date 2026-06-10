@@ -26,7 +26,7 @@ class ClienteCreateConsumerTest {
     private ClienteCreateConsumer clienteCreateConsumer;
 
     private final ClienteCreateEvent event = new ClienteCreateEvent(
-            "evt-1", "corr-1", "Cliente", "Rua 1", "12345-000",
+            "evt-1", "corr-1", "Cliente", "52998224725", "Rua 1", "12345-000",
             "Sao Paulo", "SP", "a@test.com", "11999999999");
 
     @AfterEach

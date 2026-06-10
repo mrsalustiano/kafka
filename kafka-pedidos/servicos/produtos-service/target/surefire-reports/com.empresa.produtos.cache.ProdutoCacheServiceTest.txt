@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.empresa.produtos.cache.ProdutoCacheServiceTest
 -------------------------------------------------------------------------------
-Tests run: 19, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.996 s -- in com.empresa.produtos.cache.ProdutoCacheServiceTest
+Tests run: 19, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.122 s -- in com.empresa.produtos.cache.ProdutoCacheServiceTest

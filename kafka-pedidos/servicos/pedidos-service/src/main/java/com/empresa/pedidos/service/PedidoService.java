@@ -16,7 +16,9 @@ import com.empresa.pedidos.mapper.PedidoMapper;
 import com.empresa.pedidos.producer.PedidoCreateProducer;
 import com.empresa.pedidos.repository.ClienteRepository;
 import com.empresa.pedidos.repository.PedidoRepository;
+import com.empresa.pedidos.entity.Cliente;
 import com.empresa.pedidos.util.CorrelationIdUtil;
+import com.empresa.pedidos.util.CpfUtil;
 import com.empresa.pedidos.util.PageResponseUtil;
 import com.empresa.pedidos.util.PedidoStatusUtil;
 import lombok.RequiredArgsConstructor;
@@ -43,9 +45,12 @@ public class PedidoService {
     @Transactional
     public PedidoResponse criar(PedidoRequest request) {
         try {
-            clienteRepository.findAtivoById(request.codigoCliente())
+            Cliente cliente = clienteRepository.findAtivoById(request.codigoCliente())
                     .orElseThrow(() -> new ValidationException(
                             "Cliente inativo ou nao encontrado: " + request.codigoCliente()));
+            if (!CpfUtil.isValido(cliente.getCpf())) {
+                throw new ValidationException("CPF do cliente invalido: " + request.codigoCliente());
+            }
 
             ProdutoCacheDto produto = produtoConsultaService.buscarProdutoAtivo(request.codigoProduto());
 
@@ -124,9 +129,12 @@ public class PedidoService {
             Pedido existente = pedidoRepository.findById(id)
                     .orElseThrow(() -> new NotFoundException("Pedido nao encontrado: " + id));
 
-            clienteRepository.findAtivoById(request.codigoCliente())
+            Cliente cliente = clienteRepository.findAtivoById(request.codigoCliente())
                     .orElseThrow(() -> new ValidationException(
                             "Cliente inativo ou nao encontrado: " + request.codigoCliente()));
+            if (!CpfUtil.isValido(cliente.getCpf())) {
+                throw new ValidationException("CPF do cliente invalido: " + request.codigoCliente());
+            }
             produtoConsultaService.buscarProdutoAtivo(request.codigoProduto());
 
             existente.setCodigoCliente(request.codigoCliente());

@@ -2,6 +2,7 @@ com\empresa\broker\exception\NotFoundException.class
 com\empresa\broker\producer\ClienteResponseProducer.class
 com\empresa\broker\audit\OperacaoAuditoria.class
 com\empresa\broker\config\KafkaConfig.class
+com\empresa\broker\util\CpfUtil.class
 com\empresa\broker\config\KafkaProperties.class
 com\empresa\broker\exception\KafkaConsumeException.class
 com\empresa\broker\exception\KafkaPublishException.class

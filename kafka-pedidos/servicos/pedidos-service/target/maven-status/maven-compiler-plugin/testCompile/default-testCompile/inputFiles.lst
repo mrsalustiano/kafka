@@ -15,5 +15,6 @@ D:\DEV\workspace\kafka\kafka-pedidos\servicos\pedidos-service\src\test\java\com\
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\pedidos-service\src\test\java\com\empresa\pedidos\service\PedidoServiceTest.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\pedidos-service\src\test\java\com\empresa\pedidos\service\ProdutoConsultaServiceTest.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\pedidos-service\src\test\java\com\empresa\pedidos\util\CorrelationIdUtilTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\pedidos-service\src\test\java\com\empresa\pedidos\util\CpfUtilTest.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\pedidos-service\src\test\java\com\empresa\pedidos\util\PageResponseUtilTest.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\pedidos-service\src\test\java\com\empresa\pedidos\util\PedidoStatusUtilTest.java

@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 public record ClienteResponse(
         Long codigoCliente,
         String nome,
+        String cpf,
         String endereco,
         String cep,
         String cidade,

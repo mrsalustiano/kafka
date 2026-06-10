@@ -38,4 +38,7 @@ D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\main\java\com
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\main\java\com\empresa\clientes\service\ClienteService.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\main\java\com\empresa\clientes\service\IdempotenciaService.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\main\java\com\empresa\clientes\util\CorrelationIdUtil.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\main\java\com\empresa\clientes\util\CpfUtil.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\main\java\com\empresa\clientes\util\PageResponseUtil.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\main\java\com\empresa\clientes\validation\CpfValid.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\main\java\com\empresa\clientes\validation\CpfValidator.java

@@ -16,8 +16,8 @@ import java.util.Optional;
 public interface ClienteRepository {
 
     @SqlUpdate("""
-            INSERT INTO clientes (nome, endereco, cep, cidade, estado, email, telefone, ativo)
-            VALUES (:nome, :endereco, :cep, :cidade, :estado, :email, :telefone, :ativo)
+            INSERT INTO clientes (nome, cpf, endereco, cep, cidade, estado, email, telefone, ativo)
+            VALUES (:nome, :cpf, :endereco, :cep, :cidade, :estado, :email, :telefone, :ativo)
             """)
     @GetGeneratedKeys("codigo_cliente")
     long insert(@BindBean Cliente cliente);
@@ -27,6 +27,18 @@ public interface ClienteRepository {
 
     @SqlQuery("SELECT * FROM clientes WHERE codigo_cliente = :id")
     Optional<Cliente> findById(@Bind("id") Long id);
+
+    @SqlQuery("SELECT * FROM clientes WHERE cpf = :cpf AND ativo = 'S'")
+    Optional<Cliente> findAtivoByCpf(@Bind("cpf") String cpf);
+
+    @SqlQuery("SELECT COUNT(*) > 0 FROM clientes WHERE cpf = :cpf AND ativo = 'S'")
+    boolean existsAtivoByCpf(@Bind("cpf") String cpf);
+
+    @SqlQuery("""
+            SELECT COUNT(*) > 0 FROM clientes
+            WHERE cpf = :cpf AND ativo = 'S' AND codigo_cliente <> :id
+            """)
+    boolean existsAtivoByCpfAndNotId(@Bind("cpf") String cpf, @Bind("id") Long id);
 
     @SqlQuery("""
             SELECT * FROM clientes
@@ -45,6 +57,7 @@ public interface ClienteRepository {
     @SqlUpdate("""
             UPDATE clientes
             SET nome = :nome,
+                cpf = :cpf,
                 endereco = :endereco,
                 cep = :cep,
                 cidade = :cidade,

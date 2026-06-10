@@ -44,6 +44,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class PedidoServiceTest {
 
+    private static final String CPF_VALIDO = "52998224725";
+
     @Mock
     private PedidoRepository pedidoRepository;
     @Mock
@@ -91,7 +93,7 @@ class PedidoServiceTest {
 
     @Test
     void criar_quandoSucesso_devePersistirPublicarEAuditar() {
-        when(clienteRepository.findAtivoById(1L)).thenReturn(Optional.of(Cliente.builder().codigoCliente(1L).ativo("S").build()));
+        when(clienteRepository.findAtivoById(1L)).thenReturn(Optional.of(Cliente.builder().codigoCliente(1L).cpf(CPF_VALIDO).ativo("S").build()));
         when(produtoConsultaService.buscarProdutoAtivo(2L)).thenReturn(produtoCacheDto);
         when(pedidoRepository.insert(any())).thenReturn(1L);
         doNothing().when(pedidoCreateProducer).publicar(any());
@@ -114,8 +116,17 @@ class PedidoServiceTest {
     }
 
     @Test
+    void criar_quandoCpfClienteInvalido_deveLancarValidationException() {
+        when(clienteRepository.findAtivoById(1L))
+                .thenReturn(Optional.of(Cliente.builder().codigoCliente(1L).cpf("11111111111").ativo("S").build()));
+
+        assertThatThrownBy(() -> pedidoService.criar(pedidoRequest))
+                .isInstanceOf(ValidationException.class);
+    }
+
+    @Test
     void criar_quandoErroDb_deveLancarDatabaseException() {
-        when(clienteRepository.findAtivoById(1L)).thenReturn(Optional.of(Cliente.builder().codigoCliente(1L).ativo("S").build()));
+        when(clienteRepository.findAtivoById(1L)).thenReturn(Optional.of(Cliente.builder().codigoCliente(1L).cpf(CPF_VALIDO).ativo("S").build()));
         when(produtoConsultaService.buscarProdutoAtivo(2L)).thenReturn(produtoCacheDto);
         when(pedidoRepository.insert(any())).thenThrow(new RuntimeException("erro"));
 
@@ -161,7 +172,7 @@ class PedidoServiceTest {
     @Test
     void atualizar_quandoSucesso_deveAtualizar() {
         when(pedidoRepository.findById(1L)).thenReturn(Optional.of(pedido));
-        when(clienteRepository.findAtivoById(1L)).thenReturn(Optional.of(Cliente.builder().codigoCliente(1L).ativo("S").build()));
+        when(clienteRepository.findAtivoById(1L)).thenReturn(Optional.of(Cliente.builder().codigoCliente(1L).cpf(CPF_VALIDO).ativo("S").build()));
         when(produtoConsultaService.buscarProdutoAtivo(2L)).thenReturn(produtoCacheDto);
         when(pedidoRepository.update(any())).thenReturn(1);
         when(pedidoMapper.toResponse(pedido)).thenReturn(pedidoResponse);
@@ -223,7 +234,7 @@ class PedidoServiceTest {
     @Test
     void atualizar_quandoUpdateRetornaZero_deveLancarNotFoundException() {
         when(pedidoRepository.findById(1L)).thenReturn(Optional.of(pedido));
-        when(clienteRepository.findAtivoById(1L)).thenReturn(Optional.of(Cliente.builder().codigoCliente(1L).ativo("S").build()));
+        when(clienteRepository.findAtivoById(1L)).thenReturn(Optional.of(Cliente.builder().codigoCliente(1L).cpf(CPF_VALIDO).ativo("S").build()));
         when(produtoConsultaService.buscarProdutoAtivo(2L)).thenReturn(produtoCacheDto);
         when(pedidoRepository.update(any())).thenReturn(0);
 
@@ -242,7 +253,7 @@ class PedidoServiceTest {
 
     @Test
     void criar_quandoPedidoNaoEncontradoAposInsert_deveLancarNotFoundException() {
-        when(clienteRepository.findAtivoById(1L)).thenReturn(Optional.of(Cliente.builder().codigoCliente(1L).ativo("S").build()));
+        when(clienteRepository.findAtivoById(1L)).thenReturn(Optional.of(Cliente.builder().codigoCliente(1L).cpf(CPF_VALIDO).ativo("S").build()));
         when(produtoConsultaService.buscarProdutoAtivo(2L)).thenReturn(produtoCacheDto);
         when(pedidoRepository.insert(any())).thenReturn(1L);
         doNothing().when(pedidoCreateProducer).publicar(any());
@@ -254,7 +265,7 @@ class PedidoServiceTest {
 
     @Test
     void criar_quandoErroProduto_deveLancarDatabaseException() {
-        when(clienteRepository.findAtivoById(1L)).thenReturn(Optional.of(Cliente.builder().codigoCliente(1L).ativo("S").build()));
+        when(clienteRepository.findAtivoById(1L)).thenReturn(Optional.of(Cliente.builder().codigoCliente(1L).cpf(CPF_VALIDO).ativo("S").build()));
         when(produtoConsultaService.buscarProdutoAtivo(2L)).thenThrow(new RuntimeException("redis down"));
 
         assertThatThrownBy(() -> pedidoService.criar(pedidoRequest))
@@ -273,7 +284,7 @@ class PedidoServiceTest {
     @Test
     void atualizar_quandoErroDb_deveLancarDatabaseException() {
         when(pedidoRepository.findById(1L)).thenReturn(Optional.of(pedido));
-        when(clienteRepository.findAtivoById(1L)).thenReturn(Optional.of(Cliente.builder().codigoCliente(1L).ativo("S").build()));
+        when(clienteRepository.findAtivoById(1L)).thenReturn(Optional.of(Cliente.builder().codigoCliente(1L).cpf(CPF_VALIDO).ativo("S").build()));
         when(produtoConsultaService.buscarProdutoAtivo(2L)).thenReturn(produtoCacheDto);
         when(pedidoRepository.update(any())).thenThrow(new RuntimeException("db down"));
 

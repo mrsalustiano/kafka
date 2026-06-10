@@ -36,6 +36,12 @@ public class ClienteController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(clienteService.solicitarCriacao(request));
     }
 
+    @GetMapping("/cpf/{cpf}")
+    @Operation(summary = "Buscar cliente por CPF")
+    public ResponseEntity<ClienteResponse> buscarPorCpf(@PathVariable String cpf) {
+        return ResponseEntity.ok(clienteService.buscarPorCpf(cpf));
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "Buscar cliente por ID")
     public ResponseEntity<ClienteResponse> buscarPorId(@PathVariable Long id) {

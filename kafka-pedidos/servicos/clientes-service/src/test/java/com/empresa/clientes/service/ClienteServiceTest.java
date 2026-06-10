@@ -9,6 +9,7 @@ import com.empresa.clientes.dto.ClienteStatusResponse;
 import com.empresa.clientes.dto.PageResponse;
 import com.empresa.clientes.entity.Cliente;
 import com.empresa.clientes.entity.ClienteStatus;
+import com.empresa.clientes.exception.BusinessException;
 import com.empresa.clientes.exception.DatabaseException;
 import com.empresa.clientes.exception.NotFoundException;
 import com.empresa.clientes.exception.ValidationException;
@@ -44,6 +45,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ClienteServiceTest {
 
+    private static final String CPF_VALIDO = "52998224725";
+
     @Mock
     private ClienteRepository clienteRepository;
 
@@ -73,6 +76,7 @@ class ClienteServiceTest {
         cliente = Cliente.builder()
                 .codigoCliente(1L)
                 .nome("Cliente A")
+                .cpf(CPF_VALIDO)
                 .endereco("Rua 1")
                 .cep("12345-000")
                 .cidade("Sao Paulo")
@@ -83,10 +87,10 @@ class ClienteServiceTest {
                 .dataCriacao(LocalDateTime.now())
                 .build();
 
-        clienteResponse = new ClienteResponse(1L, "Cliente A", "Rua 1", "12345-000", "Sao Paulo", "SP",
+        clienteResponse = new ClienteResponse(1L, "Cliente A", CPF_VALIDO, "Rua 1", "12345-000", "Sao Paulo", "SP",
                 "a@test.com", "11999999999", "S", LocalDateTime.now(), null);
 
-        clienteRequest = new ClienteRequest("Cliente A", "Rua 1", "12345-000", "Sao Paulo", "SP",
+        clienteRequest = new ClienteRequest("Cliente A", CPF_VALIDO, "Rua 1", "12345-000", "Sao Paulo", "SP",
                 "a@test.com", "11999999999");
 
         clienteStatus = new ClienteStatus(1L, "CRIADO", LocalDateTime.now());
@@ -101,6 +105,7 @@ class ClienteServiceTest {
     @Test
     void solicitarCriacao_devePublicarEventoERetornarAceito() {
         CorrelationIdUtil.set("corr-1");
+        when(clienteRepository.existsAtivoByCpf(CPF_VALIDO)).thenReturn(false);
         doNothing().when(clienteCreateProducer).publicar(any());
 
         ClienteAcceptedResponse result = clienteService.solicitarCriacao(clienteRequest);
@@ -110,6 +115,41 @@ class ClienteServiceTest {
         assertThat(result.eventId()).isNotBlank();
         verify(clienteCreateProducer).publicar(any());
         verify(auditoriaService).registrar(eq(OperacaoAuditoria.CREATE), eq(null), contains("Cliente A"));
+    }
+
+    @Test
+    void solicitarCriacao_quandoCpfDuplicado_deveLancarBusinessException() {
+        when(clienteRepository.existsAtivoByCpf(CPF_VALIDO)).thenReturn(true);
+
+        assertThatThrownBy(() -> clienteService.solicitarCriacao(clienteRequest))
+                .isInstanceOf(BusinessException.class);
+    }
+
+    @Test
+    void solicitarCriacao_quandoCpfInvalido_deveLancarValidationException() {
+        ClienteRequest requestInvalido = new ClienteRequest("Cliente A", "11111111111", "Rua 1", "12345-000",
+                "Sao Paulo", "SP", "a@test.com", "11999999999");
+
+        assertThatThrownBy(() -> clienteService.solicitarCriacao(requestInvalido))
+                .isInstanceOf(ValidationException.class);
+    }
+
+    @Test
+    void buscarPorCpf_deveRetornarCliente() {
+        when(clienteRepository.findAtivoByCpf(CPF_VALIDO)).thenReturn(Optional.of(cliente));
+        when(clienteMapper.toResponse(cliente)).thenReturn(clienteResponse);
+
+        ClienteResponse result = clienteService.buscarPorCpf(CPF_VALIDO);
+
+        assertThat(result).isEqualTo(clienteResponse);
+    }
+
+    @Test
+    void buscarPorCpf_quandoNaoExiste_deveLancarNotFoundException() {
+        when(clienteRepository.findAtivoByCpf(CPF_VALIDO)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> clienteService.buscarPorCpf(CPF_VALIDO))
+                .isInstanceOf(NotFoundException.class);
     }
 
     @Test
@@ -168,9 +208,12 @@ class ClienteServiceTest {
 
     @Test
     void atualizar_deveRetornarClienteAtualizado() {
+        when(clienteRepository.existsAtivoByCpfAndNotId(CPF_VALIDO, 1L)).thenReturn(false);
+
         Cliente atualizado = Cliente.builder()
                 .codigoCliente(1L)
                 .nome("Cliente A")
+                .cpf(CPF_VALIDO)
                 .endereco("Rua 1")
                 .cep("12345-000")
                 .cidade("Sao Paulo")

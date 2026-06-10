@@ -4,8 +4,10 @@ import com.empresa.broker.audit.AuditoriaService;
 import com.empresa.broker.audit.OperacaoAuditoria;
 import com.empresa.broker.dto.ClienteCreateEvent;
 import com.empresa.broker.dto.ClienteResponseEvent;
+import com.empresa.broker.exception.BusinessException;
 import com.empresa.broker.exception.DatabaseException;
 import com.empresa.broker.exception.KafkaPublishException;
+import com.empresa.broker.exception.ValidationException;
 import com.empresa.broker.producer.ClienteResponseProducer;
 import com.empresa.broker.repository.ClienteRepository;
 import org.junit.jupiter.api.Test;
@@ -27,6 +29,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ClienteProcessamentoServiceTest {
 
+    private static final String CPF_VALIDO = "52998224725";
+
     @Mock
     private IdempotenciaService idempotenciaService;
 
@@ -43,7 +47,7 @@ class ClienteProcessamentoServiceTest {
     private ClienteProcessamentoService clienteProcessamentoService;
 
     private final ClienteCreateEvent event = new ClienteCreateEvent(
-            "evt-1", "corr-1", "Cliente", "Rua 1", "12345-000",
+            "evt-1", "corr-1", "Cliente", CPF_VALIDO, "Rua 1", "12345-000",
             "Sao Paulo", "SP", "a@test.com", "11999999999");
 
     @Test
@@ -60,7 +64,7 @@ class ClienteProcessamentoServiceTest {
     @Test
     void processar_quandoEventIdAusente_deveIgnorar() {
         ClienteCreateEvent eventoSemId = new ClienteCreateEvent(
-                null, "corr-1", "Cliente", "Rua 1", "12345-000",
+                null, "corr-1", "Cliente", CPF_VALIDO, "Rua 1", "12345-000",
                 "Sao Paulo", "SP", "a@test.com", "11999999999");
 
         clienteProcessamentoService.processar(eventoSemId);
@@ -72,7 +76,7 @@ class ClienteProcessamentoServiceTest {
     @Test
     void processar_quandoEventIdBlank_deveIgnorar() {
         ClienteCreateEvent eventoBlank = new ClienteCreateEvent(
-                "  ", "corr-1", "Cliente", "Rua 1", "12345-000",
+                "  ", "corr-1", "Cliente", CPF_VALIDO, "Rua 1", "12345-000",
                 "Sao Paulo", "SP", "a@test.com", "11999999999");
 
         clienteProcessamentoService.processar(eventoBlank);
@@ -82,8 +86,33 @@ class ClienteProcessamentoServiceTest {
     }
 
     @Test
+    void processar_quandoCpfInvalido_deveLancarValidationException() {
+        ClienteCreateEvent eventoCpfInvalido = new ClienteCreateEvent(
+                "evt-1", "corr-1", "Cliente", "11111111111", "Rua 1", "12345-000",
+                "Sao Paulo", "SP", "a@test.com", "11999999999");
+        when(idempotenciaService.jaProcessado("evt-1")).thenReturn(false);
+
+        assertThatThrownBy(() -> clienteProcessamentoService.processar(eventoCpfInvalido))
+                .isInstanceOf(ValidationException.class);
+
+        verify(clienteRepository, never()).insert(any());
+    }
+
+    @Test
+    void processar_quandoCpfDuplicado_deveLancarBusinessException() {
+        when(idempotenciaService.jaProcessado("evt-1")).thenReturn(false);
+        when(clienteRepository.existsAtivoByCpf(CPF_VALIDO)).thenReturn(true);
+
+        assertThatThrownBy(() -> clienteProcessamentoService.processar(event))
+                .isInstanceOf(BusinessException.class);
+
+        verify(clienteRepository, never()).insert(any());
+    }
+
+    @Test
     void processar_quandoSucesso_devePersistirPublicarERegistrarIdempotencia() {
         when(idempotenciaService.jaProcessado("evt-1")).thenReturn(false);
+        when(clienteRepository.existsAtivoByCpf(CPF_VALIDO)).thenReturn(false);
         when(clienteRepository.insert(any())).thenReturn(1L);
 
         clienteProcessamentoService.processar(event);
@@ -98,13 +127,14 @@ class ClienteProcessamentoServiceTest {
         verify(auditoriaService).registrar(
                 OperacaoAuditoria.PROCESSAMENTO_KAFKA,
                 1L,
-                "Cliente criado via broker, eventId=evt-1"
+                "Cliente criado via broker, eventId=evt-1, cpf=" + CPF_VALIDO
         );
     }
 
     @Test
     void processar_quandoErroInsert_deveLancarDatabaseException() {
         when(idempotenciaService.jaProcessado("evt-1")).thenReturn(false);
+        when(clienteRepository.existsAtivoByCpf(CPF_VALIDO)).thenReturn(false);
         when(clienteRepository.insert(any())).thenThrow(new RuntimeException("erro db"));
 
         assertThatThrownBy(() -> clienteProcessamentoService.processar(event))
@@ -114,6 +144,7 @@ class ClienteProcessamentoServiceTest {
     @Test
     void processar_quandoErroPublicacao_devePropagarKafkaPublishException() {
         when(idempotenciaService.jaProcessado("evt-1")).thenReturn(false);
+        when(clienteRepository.existsAtivoByCpf(CPF_VALIDO)).thenReturn(false);
         when(clienteRepository.insert(any())).thenReturn(1L);
         doThrow(new KafkaPublishException("erro", new RuntimeException()))
                 .when(clienteResponseProducer).publicar(any());

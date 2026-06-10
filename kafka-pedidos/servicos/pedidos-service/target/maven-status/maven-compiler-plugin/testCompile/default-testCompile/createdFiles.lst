@@ -14,6 +14,7 @@ com\empresa\pedidos\service\IdempotenciaServiceTest.class
 com\empresa\pedidos\util\PageResponseUtilTest.class
 com\empresa\pedidos\cache\ProdutoCacheServiceTest$1.class
 com\empresa\pedidos\service\PedidoServiceTest.class
+com\empresa\pedidos\util\CpfUtilTest.class
 com\empresa\pedidos\config\ConfigBeansTest.class
 com\empresa\pedidos\config\CorrelationIdFilterTest.class
 com\empresa\pedidos\controller\PedidoControllerTest.class

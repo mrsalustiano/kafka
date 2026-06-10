@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-06-10T00:40:56-0300",
+    date = "2026-06-10T01:11:31-0300",
     comments = "version: 1.6.3, compiler: javac, environment: Java 21.0.10 (Oracle Corporation)"
 )
 @Component
@@ -27,6 +27,7 @@ public class ClienteMapperImpl implements ClienteMapper {
 
         Long codigoCliente = null;
         String nome = null;
+        String cpf = null;
         String endereco = null;
         String cep = null;
         String cidade = null;
@@ -39,6 +40,7 @@ public class ClienteMapperImpl implements ClienteMapper {
 
         codigoCliente = cliente.getCodigoCliente();
         nome = cliente.getNome();
+        cpf = cliente.getCpf();
         endereco = cliente.getEndereco();
         cep = cliente.getCep();
         cidade = cliente.getCidade();
@@ -49,7 +51,7 @@ public class ClienteMapperImpl implements ClienteMapper {
         dataCriacao = cliente.getDataCriacao();
         dataAtualizacao = cliente.getDataAtualizacao();
 
-        ClienteResponse clienteResponse = new ClienteResponse( codigoCliente, nome, endereco, cep, cidade, estado, email, telefone, ativo, dataCriacao, dataAtualizacao );
+        ClienteResponse clienteResponse = new ClienteResponse( codigoCliente, nome, cpf, endereco, cep, cidade, estado, email, telefone, ativo, dataCriacao, dataAtualizacao );
 
         return clienteResponse;
     }
@@ -96,6 +98,7 @@ public class ClienteMapperImpl implements ClienteMapper {
         Cliente.ClienteBuilder cliente = Cliente.builder();
 
         cliente.nome( request.nome() );
+        cliente.cpf( request.cpf() );
         cliente.endereco( request.endereco() );
         cliente.cep( request.cep() );
         cliente.cidade( request.cidade() );

@@ -10,6 +10,7 @@ import com.empresa.clientes.dto.ClienteStatusResponse;
 import com.empresa.clientes.dto.PageResponse;
 import com.empresa.clientes.entity.Cliente;
 import com.empresa.clientes.entity.ClienteStatus;
+import com.empresa.clientes.exception.BusinessException;
 import com.empresa.clientes.exception.DatabaseException;
 import com.empresa.clientes.exception.NotFoundException;
 import com.empresa.clientes.exception.ValidationException;
@@ -18,6 +19,7 @@ import com.empresa.clientes.producer.ClienteCreateProducer;
 import com.empresa.clientes.repository.ClienteRepository;
 import com.empresa.clientes.repository.ClienteStatusRepository;
 import com.empresa.clientes.util.CorrelationIdUtil;
+import com.empresa.clientes.util.CpfUtil;
 import com.empresa.clientes.util.PageResponseUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
-<span class="fc" id="L30">@Slf4j</span>
+<span class="fc" id="L32">@Slf4j</span>
 @Service
 @RequiredArgsConstructor
 public class ClienteService {
@@ -41,120 +43,150 @@ public class ClienteService {
     private final AuditoriaService auditoriaService;
 
     public ClienteAcceptedResponse solicitarCriacao(ClienteRequest request) {
-<span class="fc" id="L44">        String eventId = UUID.randomUUID().toString();</span>
-<span class="fc" id="L45">        String correlationId = CorrelationIdUtil.get();</span>
+<span class="fc" id="L46">        String cpf = CpfUtil.validarENormalizar(request.cpf());</span>
+<span class="fc" id="L47">        validarCpfUnico(cpf, null);</span>
 
-<span class="fc" id="L47">        ClienteCreateEvent event = new ClienteCreateEvent(</span>
+<span class="fc" id="L49">        String eventId = UUID.randomUUID().toString();</span>
+<span class="fc" id="L50">        String correlationId = CorrelationIdUtil.get();</span>
+
+<span class="fc" id="L52">        ClienteCreateEvent event = new ClienteCreateEvent(</span>
                 eventId,
                 correlationId,
-<span class="fc" id="L50">                request.nome(),</span>
-<span class="fc" id="L51">                request.endereco(),</span>
-<span class="fc" id="L52">                request.cep(),</span>
-<span class="fc" id="L53">                request.cidade(),</span>
-<span class="fc" id="L54">                request.estado(),</span>
-<span class="fc" id="L55">                request.email(),</span>
-<span class="fc" id="L56">                request.telefone()</span>
+<span class="fc" id="L55">                request.nome(),</span>
+                cpf,
+<span class="fc" id="L57">                request.endereco(),</span>
+<span class="fc" id="L58">                request.cep(),</span>
+<span class="fc" id="L59">                request.cidade(),</span>
+<span class="fc" id="L60">                request.estado(),</span>
+<span class="fc" id="L61">                request.email(),</span>
+<span class="fc" id="L62">                request.telefone()</span>
         );
 
-<span class="fc" id="L59">        clienteCreateProducer.publicar(event);</span>
-<span class="fc" id="L60">        auditoriaService.registrar(</span>
+<span class="fc" id="L65">        clienteCreateProducer.publicar(event);</span>
+<span class="fc" id="L66">        auditoriaService.registrar(</span>
                 OperacaoAuditoria.CREATE,
                 null,
-<span class="fc" id="L63">                &quot;Solicitacao de criacao de cliente: &quot; + request.nome() + &quot;, eventId=&quot; + eventId</span>
+<span class="fc" id="L69">                &quot;Solicitacao de criacao de cliente: &quot; + request.nome() + &quot;, cpf=&quot; + cpf + &quot;, eventId=&quot; + eventId</span>
         );
 
-<span class="fc" id="L66">        log.info(&quot;Solicitacao de criacao de cliente aceita: eventId={}, nome={}&quot;, eventId, request.nome());</span>
-<span class="fc" id="L67">        return new ClienteAcceptedResponse(eventId, correlationId, STATUS_ACEITO);</span>
+<span class="fc" id="L72">        log.info(&quot;Solicitacao de criacao de cliente aceita: eventId={}, nome={}, cpf={}&quot;, eventId, request.nome(), cpf);</span>
+<span class="fc" id="L73">        return new ClienteAcceptedResponse(eventId, correlationId, STATUS_ACEITO);</span>
     }
 
     public ClienteResponse buscarPorId(Long id) {
         try {
-<span class="fc" id="L72">            Cliente cliente = clienteRepository.findAtivoById(id)</span>
-<span class="fc" id="L73">                    .orElseThrow(() -&gt; new NotFoundException(&quot;Cliente nao encontrado: &quot; + id));</span>
-<span class="fc" id="L74">            return clienteMapper.toResponse(cliente);</span>
-<span class="fc" id="L75">        } catch (NotFoundException ex) {</span>
-<span class="fc" id="L76">            throw ex;</span>
-<span class="fc" id="L77">        } catch (Exception ex) {</span>
-<span class="fc" id="L78">            throw new DatabaseException(&quot;Erro ao buscar cliente: &quot; + id, ex);</span>
+<span class="fc" id="L78">            Cliente cliente = clienteRepository.findAtivoById(id)</span>
+<span class="fc" id="L79">                    .orElseThrow(() -&gt; new NotFoundException(&quot;Cliente nao encontrado: &quot; + id));</span>
+<span class="fc" id="L80">            return clienteMapper.toResponse(cliente);</span>
+<span class="fc" id="L81">        } catch (NotFoundException ex) {</span>
+<span class="fc" id="L82">            throw ex;</span>
+<span class="fc" id="L83">        } catch (Exception ex) {</span>
+<span class="fc" id="L84">            throw new DatabaseException(&quot;Erro ao buscar cliente: &quot; + id, ex);</span>
+        }
+    }
+
+    public ClienteResponse buscarPorCpf(String cpf) {
+        try {
+<span class="fc" id="L90">            String cpfNormalizado = CpfUtil.validarENormalizar(cpf);</span>
+<span class="fc" id="L91">            Cliente cliente = clienteRepository.findAtivoByCpf(cpfNormalizado)</span>
+<span class="fc" id="L92">                    .orElseThrow(() -&gt; new NotFoundException(&quot;Cliente nao encontrado para CPF: &quot; + cpfNormalizado));</span>
+<span class="fc" id="L93">            return clienteMapper.toResponse(cliente);</span>
+<span class="fc" id="L94">        } catch (NotFoundException | ValidationException ex) {</span>
+<span class="fc" id="L95">            throw ex;</span>
+<span class="nc" id="L96">        } catch (Exception ex) {</span>
+<span class="nc" id="L97">            throw new DatabaseException(&quot;Erro ao buscar cliente por CPF: &quot; + cpf, ex);</span>
         }
     }
 
     public PageResponse&lt;ClienteResponse&gt; listar(int page, int size, String sort) {
         try {
-<span class="fc" id="L84">            String sortColumn = PageResponseUtil.resolveSortColumn(sort);</span>
-<span class="fc" id="L85">            String sortDirection = PageResponseUtil.resolveSortDirection(sort);</span>
-<span class="fc" id="L86">            long offset = (long) page * size;</span>
-<span class="fc" id="L87">            List&lt;Cliente&gt; clientes = clienteRepository.findAllAtivosPaginado(sortColumn, sortDirection, size, offset);</span>
-<span class="fc" id="L88">            long total = clienteRepository.countAtivos();</span>
-<span class="fc" id="L89">            List&lt;ClienteResponse&gt; content = clienteMapper.toResponseList(clientes);</span>
-<span class="fc" id="L90">            return PageResponseUtil.of(content, page, size, total);</span>
-<span class="fc" id="L91">        } catch (ValidationException ex) {</span>
-<span class="fc" id="L92">            throw ex;</span>
-<span class="fc" id="L93">        } catch (Exception ex) {</span>
-<span class="fc" id="L94">            throw new DatabaseException(&quot;Erro ao listar clientes&quot;, ex);</span>
+<span class="fc" id="L103">            String sortColumn = PageResponseUtil.resolveSortColumn(sort);</span>
+<span class="fc" id="L104">            String sortDirection = PageResponseUtil.resolveSortDirection(sort);</span>
+<span class="fc" id="L105">            long offset = (long) page * size;</span>
+<span class="fc" id="L106">            List&lt;Cliente&gt; clientes = clienteRepository.findAllAtivosPaginado(sortColumn, sortDirection, size, offset);</span>
+<span class="fc" id="L107">            long total = clienteRepository.countAtivos();</span>
+<span class="fc" id="L108">            List&lt;ClienteResponse&gt; content = clienteMapper.toResponseList(clientes);</span>
+<span class="fc" id="L109">            return PageResponseUtil.of(content, page, size, total);</span>
+<span class="fc" id="L110">        } catch (ValidationException ex) {</span>
+<span class="fc" id="L111">            throw ex;</span>
+<span class="fc" id="L112">        } catch (Exception ex) {</span>
+<span class="fc" id="L113">            throw new DatabaseException(&quot;Erro ao listar clientes&quot;, ex);</span>
         }
     }
 
     @Transactional
     public ClienteResponse atualizar(Long id, ClienteRequest request) {
         try {
-<span class="fc" id="L101">            Cliente existente = clienteRepository.findAtivoById(id)</span>
-<span class="fc" id="L102">                    .orElseThrow(() -&gt; new NotFoundException(&quot;Cliente nao encontrado: &quot; + id));</span>
+<span class="fc" id="L120">            Cliente existente = clienteRepository.findAtivoById(id)</span>
+<span class="fc" id="L121">                    .orElseThrow(() -&gt; new NotFoundException(&quot;Cliente nao encontrado: &quot; + id));</span>
 
-<span class="fc" id="L104">            existente.setNome(request.nome());</span>
-<span class="fc" id="L105">            existente.setEndereco(request.endereco());</span>
-<span class="fc" id="L106">            existente.setCep(request.cep());</span>
-<span class="fc" id="L107">            existente.setCidade(request.cidade());</span>
-<span class="fc" id="L108">            existente.setEstado(request.estado());</span>
-<span class="fc" id="L109">            existente.setEmail(request.email());</span>
-<span class="fc" id="L110">            existente.setTelefone(request.telefone());</span>
+<span class="fc" id="L123">            String cpf = CpfUtil.validarENormalizar(request.cpf());</span>
+<span class="fc" id="L124">            validarCpfUnico(cpf, id);</span>
 
-<span class="fc" id="L112">            int atualizados = clienteRepository.update(existente);</span>
-<span class="fc bfc" id="L113" title="All 2 branches covered.">            if (atualizados == 0) {</span>
-<span class="fc" id="L114">                throw new NotFoundException(&quot;Cliente nao encontrado: &quot; + id);</span>
+<span class="fc" id="L126">            existente.setNome(request.nome());</span>
+<span class="fc" id="L127">            existente.setCpf(cpf);</span>
+<span class="fc" id="L128">            existente.setEndereco(request.endereco());</span>
+<span class="fc" id="L129">            existente.setCep(request.cep());</span>
+<span class="fc" id="L130">            existente.setCidade(request.cidade());</span>
+<span class="fc" id="L131">            existente.setEstado(request.estado());</span>
+<span class="fc" id="L132">            existente.setEmail(request.email());</span>
+<span class="fc" id="L133">            existente.setTelefone(request.telefone());</span>
+
+<span class="fc" id="L135">            int atualizados = clienteRepository.update(existente);</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">            if (atualizados == 0) {</span>
+<span class="fc" id="L137">                throw new NotFoundException(&quot;Cliente nao encontrado: &quot; + id);</span>
             }
 
-<span class="fc" id="L117">            Cliente atualizado = clienteRepository.findAtivoById(id)</span>
-<span class="fc" id="L118">                    .orElseThrow(() -&gt; new NotFoundException(&quot;Cliente nao encontrado: &quot; + id));</span>
-<span class="fc" id="L119">            ClienteResponse response = clienteMapper.toResponse(atualizado);</span>
-<span class="fc" id="L120">            auditoriaService.registrar(OperacaoAuditoria.UPDATE, id, &quot;Cliente atualizado: &quot; + request.nome());</span>
-<span class="fc" id="L121">            return response;</span>
-<span class="fc" id="L122">        } catch (NotFoundException ex) {</span>
-<span class="fc" id="L123">            throw ex;</span>
-<span class="fc" id="L124">        } catch (Exception ex) {</span>
-<span class="fc" id="L125">            throw new DatabaseException(&quot;Erro ao atualizar cliente: &quot; + id, ex);</span>
+<span class="fc" id="L140">            Cliente atualizado = clienteRepository.findAtivoById(id)</span>
+<span class="fc" id="L141">                    .orElseThrow(() -&gt; new NotFoundException(&quot;Cliente nao encontrado: &quot; + id));</span>
+<span class="fc" id="L142">            ClienteResponse response = clienteMapper.toResponse(atualizado);</span>
+<span class="fc" id="L143">            auditoriaService.registrar(OperacaoAuditoria.UPDATE, id, &quot;Cliente atualizado: &quot; + request.nome());</span>
+<span class="fc" id="L144">            return response;</span>
+<span class="fc" id="L145">        } catch (NotFoundException | ValidationException | BusinessException ex) {</span>
+<span class="fc" id="L146">            throw ex;</span>
+<span class="fc" id="L147">        } catch (Exception ex) {</span>
+<span class="fc" id="L148">            throw new DatabaseException(&quot;Erro ao atualizar cliente: &quot; + id, ex);</span>
         }
     }
 
     @Transactional
     public void excluirLogicamente(Long id) {
         try {
-<span class="fc" id="L132">            clienteRepository.findAtivoById(id)</span>
-<span class="fc" id="L133">                    .orElseThrow(() -&gt; new NotFoundException(&quot;Cliente nao encontrado: &quot; + id));</span>
+<span class="fc" id="L155">            clienteRepository.findAtivoById(id)</span>
+<span class="fc" id="L156">                    .orElseThrow(() -&gt; new NotFoundException(&quot;Cliente nao encontrado: &quot; + id));</span>
 
-<span class="fc" id="L135">            int desativados = clienteRepository.desativar(id);</span>
-<span class="fc bfc" id="L136" title="All 2 branches covered.">            if (desativados == 0) {</span>
-<span class="fc" id="L137">                throw new NotFoundException(&quot;Cliente nao encontrado: &quot; + id);</span>
+<span class="fc" id="L158">            int desativados = clienteRepository.desativar(id);</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">            if (desativados == 0) {</span>
+<span class="fc" id="L160">                throw new NotFoundException(&quot;Cliente nao encontrado: &quot; + id);</span>
             }
 
-<span class="fc" id="L140">            auditoriaService.registrar(OperacaoAuditoria.DELETE, id, &quot;Exclusao logica do cliente&quot;);</span>
-<span class="fc" id="L141">        } catch (NotFoundException ex) {</span>
-<span class="fc" id="L142">            throw ex;</span>
-<span class="fc" id="L143">        } catch (Exception ex) {</span>
-<span class="fc" id="L144">            throw new DatabaseException(&quot;Erro ao excluir cliente: &quot; + id, ex);</span>
-<span class="fc" id="L145">        }</span>
-<span class="fc" id="L146">    }</span>
+<span class="fc" id="L163">            auditoriaService.registrar(OperacaoAuditoria.DELETE, id, &quot;Exclusao logica do cliente&quot;);</span>
+<span class="fc" id="L164">        } catch (NotFoundException ex) {</span>
+<span class="fc" id="L165">            throw ex;</span>
+<span class="fc" id="L166">        } catch (Exception ex) {</span>
+<span class="fc" id="L167">            throw new DatabaseException(&quot;Erro ao excluir cliente: &quot; + id, ex);</span>
+<span class="fc" id="L168">        }</span>
+<span class="fc" id="L169">    }</span>
 
     public ClienteStatusResponse consultarStatus(Long id) {
         try {
-<span class="fc" id="L150">            ClienteStatus status = clienteStatusRepository.findById(id)</span>
-<span class="fc" id="L151">                    .orElseThrow(() -&gt; new NotFoundException(&quot;Status do cliente nao encontrado: &quot; + id));</span>
-<span class="fc" id="L152">            return clienteMapper.toStatusResponse(status);</span>
-<span class="fc" id="L153">        } catch (NotFoundException ex) {</span>
-<span class="fc" id="L154">            throw ex;</span>
-<span class="fc" id="L155">        } catch (Exception ex) {</span>
-<span class="fc" id="L156">            throw new DatabaseException(&quot;Erro ao consultar status do cliente: &quot; + id, ex);</span>
+<span class="fc" id="L173">            ClienteStatus status = clienteStatusRepository.findById(id)</span>
+<span class="fc" id="L174">                    .orElseThrow(() -&gt; new NotFoundException(&quot;Status do cliente nao encontrado: &quot; + id));</span>
+<span class="fc" id="L175">            return clienteMapper.toStatusResponse(status);</span>
+<span class="fc" id="L176">        } catch (NotFoundException ex) {</span>
+<span class="fc" id="L177">            throw ex;</span>
+<span class="fc" id="L178">        } catch (Exception ex) {</span>
+<span class="fc" id="L179">            throw new DatabaseException(&quot;Erro ao consultar status do cliente: &quot; + id, ex);</span>
         }
     }
+
+    private void validarCpfUnico(String cpf, Long codigoClienteExcluir) {
+<span class="fc bfc" id="L184" title="All 2 branches covered.">        boolean existe = codigoClienteExcluir == null</span>
+<span class="fc" id="L185">                ? clienteRepository.existsAtivoByCpf(cpf)</span>
+<span class="fc" id="L186">                : clienteRepository.existsAtivoByCpfAndNotId(cpf, codigoClienteExcluir);</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">        if (existe) {</span>
+<span class="fc" id="L188">            throw new BusinessException(&quot;CPF ja cadastrado: &quot; + cpf);</span>
+        }
+<span class="fc" id="L190">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

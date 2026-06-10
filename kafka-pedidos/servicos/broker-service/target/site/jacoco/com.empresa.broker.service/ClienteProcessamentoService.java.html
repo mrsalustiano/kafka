@@ -5,17 +5,20 @@ import com.empresa.broker.audit.OperacaoAuditoria;
 import com.empresa.broker.dto.ClienteCreateEvent;
 import com.empresa.broker.dto.ClienteResponseEvent;
 import com.empresa.broker.entity.Cliente;
+import com.empresa.broker.exception.BusinessException;
 import com.empresa.broker.exception.DatabaseException;
 import com.empresa.broker.exception.KafkaPublishException;
 import com.empresa.broker.exception.TimeoutException;
+import com.empresa.broker.exception.ValidationException;
 import com.empresa.broker.producer.ClienteResponseProducer;
 import com.empresa.broker.repository.ClienteRepository;
+import com.empresa.broker.util.CpfUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-<span class="fc" id="L18">@Slf4j</span>
+<span class="fc" id="L21">@Slf4j</span>
 @Service
 @RequiredArgsConstructor
 public class ClienteProcessamentoService {
@@ -30,47 +33,53 @@ public class ClienteProcessamentoService {
 
     @Transactional
     public void processar(ClienteCreateEvent event) {
-<span class="fc bfc" id="L33" title="All 4 branches covered.">        if (event.eventId() == null || event.eventId().isBlank()) {</span>
-<span class="fc" id="L34">            log.warn(&quot;Evento client-create ignorado: eventId ausente&quot;);</span>
-<span class="fc" id="L35">            return;</span>
+<span class="fc bfc" id="L36" title="All 4 branches covered.">        if (event.eventId() == null || event.eventId().isBlank()) {</span>
+<span class="fc" id="L37">            log.warn(&quot;Evento client-create ignorado: eventId ausente&quot;);</span>
+<span class="fc" id="L38">            return;</span>
         }
 
-<span class="fc bfc" id="L38" title="All 2 branches covered.">        if (idempotenciaService.jaProcessado(event.eventId())) {</span>
-<span class="fc" id="L39">            log.warn(&quot;Evento duplicado ignorado: eventId={}&quot;, event.eventId());</span>
-<span class="fc" id="L40">            return;</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        if (idempotenciaService.jaProcessado(event.eventId())) {</span>
+<span class="fc" id="L42">            log.warn(&quot;Evento duplicado ignorado: eventId={}&quot;, event.eventId());</span>
+<span class="fc" id="L43">            return;</span>
         }
 
         try {
-<span class="fc" id="L44">            Cliente cliente = Cliente.builder()</span>
-<span class="fc" id="L45">                    .nome(event.nome())</span>
-<span class="fc" id="L46">                    .endereco(event.endereco())</span>
-<span class="fc" id="L47">                    .cep(event.cep())</span>
-<span class="fc" id="L48">                    .cidade(event.cidade())</span>
-<span class="fc" id="L49">                    .estado(event.estado())</span>
-<span class="fc" id="L50">                    .email(event.email())</span>
-<span class="fc" id="L51">                    .telefone(event.telefone())</span>
-<span class="fc" id="L52">                    .ativo(ATIVO)</span>
-<span class="fc" id="L53">                    .build();</span>
+<span class="fc" id="L47">            String cpf = CpfUtil.validarENormalizar(event.cpf());</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">            if (clienteRepository.existsAtivoByCpf(cpf)) {</span>
+<span class="fc" id="L49">                throw new BusinessException(&quot;CPF ja cadastrado: &quot; + cpf);</span>
+            }
 
-<span class="fc" id="L55">            long codigoCliente = clienteRepository.insert(cliente);</span>
-<span class="fc" id="L56">            log.info(&quot;Cliente persistido com id {}&quot;, codigoCliente);</span>
+<span class="fc" id="L52">            Cliente cliente = Cliente.builder()</span>
+<span class="fc" id="L53">                    .nome(event.nome())</span>
+<span class="fc" id="L54">                    .cpf(cpf)</span>
+<span class="fc" id="L55">                    .endereco(event.endereco())</span>
+<span class="fc" id="L56">                    .cep(event.cep())</span>
+<span class="fc" id="L57">                    .cidade(event.cidade())</span>
+<span class="fc" id="L58">                    .estado(event.estado())</span>
+<span class="fc" id="L59">                    .email(event.email())</span>
+<span class="fc" id="L60">                    .telefone(event.telefone())</span>
+<span class="fc" id="L61">                    .ativo(ATIVO)</span>
+<span class="fc" id="L62">                    .build();</span>
 
-<span class="fc" id="L58">            ClienteResponseEvent response = new ClienteResponseEvent(</span>
-<span class="fc" id="L59">                    event.eventId(), codigoCliente, STATUS_CRIADO);</span>
+<span class="fc" id="L64">            long codigoCliente = clienteRepository.insert(cliente);</span>
+<span class="fc" id="L65">            log.info(&quot;Cliente persistido com id {}&quot;, codigoCliente);</span>
 
-<span class="fc" id="L61">            clienteResponseProducer.publicar(response);</span>
-<span class="fc" id="L62">            idempotenciaService.registrar(event.eventId());</span>
+<span class="fc" id="L67">            ClienteResponseEvent response = new ClienteResponseEvent(</span>
+<span class="fc" id="L68">                    event.eventId(), codigoCliente, STATUS_CRIADO);</span>
 
-<span class="fc" id="L64">            auditoriaService.registrar(</span>
+<span class="fc" id="L70">            clienteResponseProducer.publicar(response);</span>
+<span class="fc" id="L71">            idempotenciaService.registrar(event.eventId());</span>
+
+<span class="fc" id="L73">            auditoriaService.registrar(</span>
                     OperacaoAuditoria.PROCESSAMENTO_KAFKA,
-<span class="fc" id="L66">                    codigoCliente,</span>
-<span class="fc" id="L67">                    &quot;Cliente criado via broker, eventId=&quot; + event.eventId()</span>
+<span class="fc" id="L75">                    codigoCliente,</span>
+<span class="fc" id="L76">                    &quot;Cliente criado via broker, eventId=&quot; + event.eventId() + &quot;, cpf=&quot; + cpf</span>
             );
-<span class="fc" id="L69">        } catch (KafkaPublishException | TimeoutException ex) {</span>
-<span class="fc" id="L70">            throw ex;</span>
-<span class="fc" id="L71">        } catch (Exception ex) {</span>
-<span class="fc" id="L72">            throw new DatabaseException(&quot;Erro ao processar evento client-create: &quot; + event.eventId(), ex);</span>
-<span class="fc" id="L73">        }</span>
-<span class="fc" id="L74">    }</span>
+<span class="fc" id="L78">        } catch (ValidationException | BusinessException | KafkaPublishException | TimeoutException ex) {</span>
+<span class="fc" id="L79">            throw ex;</span>
+<span class="fc" id="L80">        } catch (Exception ex) {</span>
+<span class="fc" id="L81">            throw new DatabaseException(&quot;Erro ao processar evento client-create: &quot; + event.eventId(), ex);</span>
+<span class="fc" id="L82">        }</span>
+<span class="fc" id="L83">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

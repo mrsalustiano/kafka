@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ClienteRequest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">clientes-service</a> &gt; <a href="index.source.html" class="el_package">com.empresa.clientes.dto</a> &gt; <span class="el_source">ClienteRequest.java</span></div><h1>ClienteRequest.java</h1><pre class="source lang-java linenums">package com.empresa.clientes.dto;
 
+import com.empresa.clientes.validation.CpfValid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-<span class="fc" id="L7">public record ClienteRequest(</span>
+<span class="fc" id="L8">public record ClienteRequest(</span>
         @NotBlank(message = &quot;nome e obrigatorio&quot;)
         @Size(max = 200, message = &quot;nome deve ter no maximo 200 caracteres&quot;)
         String nome,
+
+        @NotBlank(message = &quot;cpf e obrigatorio&quot;)
+        @CpfValid
+        @Size(max = 14, message = &quot;cpf deve ter no maximo 14 caracteres&quot;)
+        String cpf,
 
         @Size(max = 255, message = &quot;endereco deve ter no maximo 255 caracteres&quot;)
         String endereco,

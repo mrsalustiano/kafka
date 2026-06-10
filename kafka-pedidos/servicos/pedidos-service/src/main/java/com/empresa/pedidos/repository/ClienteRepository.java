@@ -12,4 +12,7 @@ public interface ClienteRepository {
 
     @SqlQuery("SELECT * FROM clientes WHERE codigo_cliente = :id AND ativo = 'S'")
     Optional<Cliente> findAtivoById(@Bind("id") Long id);
+
+    @SqlQuery("SELECT * FROM clientes WHERE cpf = :cpf AND ativo = 'S'")
+    Optional<Cliente> findAtivoByCpf(@Bind("cpf") String cpf);
 }

@@ -22,6 +22,7 @@ class ClienteMapperTest {
         Cliente cliente = Cliente.builder()
                 .codigoCliente(1L)
                 .nome("Cliente")
+                .cpf("52998224725")
                 .endereco("Rua 1")
                 .cep("12345-000")
                 .cidade("Sao Paulo")
@@ -36,17 +37,19 @@ class ClienteMapperTest {
 
         assertThat(response.codigoCliente()).isEqualTo(1L);
         assertThat(response.nome()).isEqualTo("Cliente");
+        assertThat(response.cpf()).isEqualTo("52998224725");
         assertThat(response.email()).isEqualTo("a@test.com");
     }
 
     @Test
     void toEntity_deveMapearRequest() {
-        ClienteRequest request = new ClienteRequest("Novo", "Rua 2", "54321-000",
+        ClienteRequest request = new ClienteRequest("Novo", "52998224725", "Rua 2", "54321-000",
                 "Rio", "RJ", "b@test.com", "21999999999");
 
         Cliente cliente = mapper.toEntity(request);
 
         assertThat(cliente.getNome()).isEqualTo("Novo");
+        assertThat(cliente.getCpf()).isEqualTo("52998224725");
         assertThat(cliente.getAtivo()).isEqualTo("S");
         assertThat(cliente.getCodigoCliente()).isNull();
     }

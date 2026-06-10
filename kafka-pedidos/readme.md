@@ -125,7 +125,11 @@ infraestrutura/mysql/flyway/
 
 ├── V5__create_auditoria.sql
 
-└── V6__create_mensagens_processadas.sql
+├── V6__create_mensagens_processadas.sql
+
+├── V7__create_cliente_status.sql
+
+└── V8__add_cpf_clientes.sql
 
 ## **Resumo do schema**
 
@@ -138,6 +142,8 @@ infraestrutura/mysql/flyway/
 | V4            | `pagamentos`            | FK → `pedidos` (1:1)                   |
 | V5            | `auditoria`             | —                                      |
 | V6            | `mensagens_processadas` | `event_id` UNIQUE (idempotência Kafka) |
+| V7            | `cliente_status`        | Status assíncrono de criação           |
+| V8            | `clientes`              | Coluna `cpf` VARCHAR(11) UNIQUE        |
 
 
 ## **Constraints aplicadas**
@@ -151,7 +157,7 @@ infraestrutura/mysql/flyway/
 
 ## **Índices recomendados**
 
-- **clientes**: `ativo`, `email`, `nome`, `data_criacao`
+- **clientes**: `ativo`, `cpf` (UNIQUE), `email`, `nome`, `data_criacao`
 - **produtos**: `ativo`, `descricao`, `data_criacao`
 - **pedidos**: `codigo_cliente`, `codigo_produto`, `status`, `data_pedido`, `data_criacao`, composto `(codigo_cliente, status)`
 - **pagamentos**: `tipo_pagamento`, `efetivado`

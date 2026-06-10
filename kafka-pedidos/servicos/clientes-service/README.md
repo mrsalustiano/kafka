@@ -19,11 +19,34 @@ Porta: **8081**
 | Metodo | Endpoint | Descricao |
 |--------|----------|-----------|
 | POST | `/api/v1/clientes` | Solicitar criacao de cliente via Kafka (retorna 202) |
+| GET | `/api/v1/clientes/cpf/{cpf}` | Buscar cliente por CPF (aceita com ou sem mascara) |
 | GET | `/api/v1/clientes/{id}` | Buscar cliente por ID |
 | GET | `/api/v1/clientes` | Listar paginado (`page`, `size`, `sort`) |
 | PUT | `/api/v1/clientes/{id}` | Atualizar cliente |
 | DELETE | `/api/v1/clientes/{id}` | Exclusao logica (`ativo = N`) |
 | GET | `/api/v1/clientes/status/{id}` | Consultar status de criacao do cliente |
+
+### CPF
+
+- Campo obrigatorio no corpo de `POST` e `PUT`
+- Armazenado como 11 digitos (string, sem pontuacao)
+- Unico entre clientes ativos
+- Validado pelo algoritmo de digitos verificadores
+
+Exemplo de corpo:
+
+```json
+{
+  "nome": "Cliente Teste",
+  "cpf": "529.982.247-25",
+  "endereco": "Rua Exemplo, 100",
+  "cep": "01310-100",
+  "cidade": "Sao Paulo",
+  "estado": "SP",
+  "email": "cliente@teste.com",
+  "telefone": "11999999999"
+}
+```
 
 ## Kafka
 

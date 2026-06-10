@@ -1,5 +1,6 @@
 package com.empresa.clientes.dto;
 
+import com.empresa.clientes.validation.CpfValid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -8,6 +9,11 @@ public record ClienteRequest(
         @NotBlank(message = "nome e obrigatorio")
         @Size(max = 200, message = "nome deve ter no maximo 200 caracteres")
         String nome,
+
+        @NotBlank(message = "cpf e obrigatorio")
+        @CpfValid
+        @Size(max = 14, message = "cpf deve ter no maximo 14 caracteres")
+        String cpf,
 
         @Size(max = 255, message = "endereco deve ter no maximo 255 caracteres")
         String endereco,

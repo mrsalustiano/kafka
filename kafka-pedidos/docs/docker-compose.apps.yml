@@ -1,0 +1,93 @@
+# Microsserviços kafka-pedidos — usar junto com infraestrutura/docker-compose.yml
+#
+# Exemplo:
+#   docker compose -f infraestrutura/docker-compose.yml -f docs/docker-compose.apps.yml up -d
+
+services:
+  clientes-service:
+    image: kafka-pedidos/clientes-service:${APP_VERSION:-1.0.0-SNAPSHOT}
+    build:
+      context: ../servicos/clientes-service
+      dockerfile: Dockerfile
+    container_name: kafka-pedidos-clientes-service
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment: &spring-datasource
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/kafka_pedidos?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Sao_Paulo
+      SPRING_DATASOURCE_USERNAME: kafka_user
+      SPRING_DATASOURCE_PASSWORD: kafka_pass
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      TZ: America/Sao_Paulo
+    depends_on:
+      mysql:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    networks:
+      - kafka-pedidos
+
+  produtos-service:
+    image: kafka-pedidos/produtos-service:${APP_VERSION:-1.0.0-SNAPSHOT}
+    build:
+      context: ../servicos/produtos-service
+      dockerfile: Dockerfile
+    container_name: kafka-pedidos-produtos-service
+    restart: unless-stopped
+    ports:
+      - "8082:8082"
+    environment:
+      <<: *spring-datasource
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+    depends_on:
+      mysql:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - kafka-pedidos
+
+  pedidos-service:
+    image: kafka-pedidos/pedidos-service:${APP_VERSION:-1.0.0-SNAPSHOT}
+    build:
+      context: ../servicos/pedidos-service
+      dockerfile: Dockerfile
+    container_name: kafka-pedidos-pedidos-service
+    restart: unless-stopped
+    ports:
+      - "8083:8083"
+    environment:
+      <<: *spring-datasource
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+    depends_on:
+      mysql:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - kafka-pedidos
+
+  broker-service:
+    image: kafka-pedidos/broker-service:${APP_VERSION:-1.0.0-SNAPSHOT}
+    build:
+      context: ../servicos/broker-service
+      dockerfile: Dockerfile
+    container_name: kafka-pedidos-broker-service
+    restart: unless-stopped
+    ports:
+      - "8084:8084"
+    environment:
+      <<: *spring-datasource
+    depends_on:
+      mysql:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    networks:
+      - kafka-pedidos

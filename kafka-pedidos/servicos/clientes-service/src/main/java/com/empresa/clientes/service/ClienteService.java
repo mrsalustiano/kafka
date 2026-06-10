@@ -10,6 +10,7 @@ import com.empresa.clientes.dto.ClienteStatusResponse;
 import com.empresa.clientes.dto.PageResponse;
 import com.empresa.clientes.entity.Cliente;
 import com.empresa.clientes.entity.ClienteStatus;
+import com.empresa.clientes.exception.BusinessException;
 import com.empresa.clientes.exception.DatabaseException;
 import com.empresa.clientes.exception.NotFoundException;
 import com.empresa.clientes.exception.ValidationException;
@@ -18,6 +19,7 @@ import com.empresa.clientes.producer.ClienteCreateProducer;
 import com.empresa.clientes.repository.ClienteRepository;
 import com.empresa.clientes.repository.ClienteStatusRepository;
 import com.empresa.clientes.util.CorrelationIdUtil;
+import com.empresa.clientes.util.CpfUtil;
 import com.empresa.clientes.util.PageResponseUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +43,9 @@ public class ClienteService {
     private final AuditoriaService auditoriaService;
 
     public ClienteAcceptedResponse solicitarCriacao(ClienteRequest request) {
+        String cpf = CpfUtil.validarENormalizar(request.cpf());
+        validarCpfUnico(cpf, null);
+
         String eventId = UUID.randomUUID().toString();
         String correlationId = CorrelationIdUtil.get();
 
@@ -48,6 +53,7 @@ public class ClienteService {
                 eventId,
                 correlationId,
                 request.nome(),
+                cpf,
                 request.endereco(),
                 request.cep(),
                 request.cidade(),
@@ -60,10 +66,10 @@ public class ClienteService {
         auditoriaService.registrar(
                 OperacaoAuditoria.CREATE,
                 null,
-                "Solicitacao de criacao de cliente: " + request.nome() + ", eventId=" + eventId
+                "Solicitacao de criacao de cliente: " + request.nome() + ", cpf=" + cpf + ", eventId=" + eventId
         );
 
-        log.info("Solicitacao de criacao de cliente aceita: eventId={}, nome={}", eventId, request.nome());
+        log.info("Solicitacao de criacao de cliente aceita: eventId={}, nome={}, cpf={}", eventId, request.nome(), cpf);
         return new ClienteAcceptedResponse(eventId, correlationId, STATUS_ACEITO);
     }
 
@@ -76,6 +82,19 @@ public class ClienteService {
             throw ex;
         } catch (Exception ex) {
             throw new DatabaseException("Erro ao buscar cliente: " + id, ex);
+        }
+    }
+
+    public ClienteResponse buscarPorCpf(String cpf) {
+        try {
+            String cpfNormalizado = CpfUtil.validarENormalizar(cpf);
+            Cliente cliente = clienteRepository.findAtivoByCpf(cpfNormalizado)
+                    .orElseThrow(() -> new NotFoundException("Cliente nao encontrado para CPF: " + cpfNormalizado));
+            return clienteMapper.toResponse(cliente);
+        } catch (NotFoundException | ValidationException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new DatabaseException("Erro ao buscar cliente por CPF: " + cpf, ex);
         }
     }
 
@@ -101,7 +120,11 @@ public class ClienteService {
             Cliente existente = clienteRepository.findAtivoById(id)
                     .orElseThrow(() -> new NotFoundException("Cliente nao encontrado: " + id));
 
+            String cpf = CpfUtil.validarENormalizar(request.cpf());
+            validarCpfUnico(cpf, id);
+
             existente.setNome(request.nome());
+            existente.setCpf(cpf);
             existente.setEndereco(request.endereco());
             existente.setCep(request.cep());
             existente.setCidade(request.cidade());
@@ -119,7 +142,7 @@ public class ClienteService {
             ClienteResponse response = clienteMapper.toResponse(atualizado);
             auditoriaService.registrar(OperacaoAuditoria.UPDATE, id, "Cliente atualizado: " + request.nome());
             return response;
-        } catch (NotFoundException ex) {
+        } catch (NotFoundException | ValidationException | BusinessException ex) {
             throw ex;
         } catch (Exception ex) {
             throw new DatabaseException("Erro ao atualizar cliente: " + id, ex);
@@ -154,6 +177,15 @@ public class ClienteService {
             throw ex;
         } catch (Exception ex) {
             throw new DatabaseException("Erro ao consultar status do cliente: " + id, ex);
+        }
+    }
+
+    private void validarCpfUnico(String cpf, Long codigoClienteExcluir) {
+        boolean existe = codigoClienteExcluir == null
+                ? clienteRepository.existsAtivoByCpf(cpf)
+                : clienteRepository.existsAtivoByCpfAndNotId(cpf, codigoClienteExcluir);
+        if (existe) {
+            throw new BusinessException("CPF ja cadastrado: " + cpf);
         }
     }
 }

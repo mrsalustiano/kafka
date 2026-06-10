@@ -12,4 +12,6 @@ D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\test\java\com
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\test\java\com\empresa\clientes\service\ClienteServiceTest.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\test\java\com\empresa\clientes\service\IdempotenciaServiceTest.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\test\java\com\empresa\clientes\util\CorrelationIdUtilTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\test\java\com\empresa\clientes\util\CpfUtilTest.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\test\java\com\empresa\clientes\util\PageResponseUtilTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\test\java\com\empresa\clientes\validation\CpfValidatorTest.java

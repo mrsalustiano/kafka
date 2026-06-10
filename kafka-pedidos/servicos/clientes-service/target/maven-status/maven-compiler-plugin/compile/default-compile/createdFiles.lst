@@ -29,9 +29,11 @@ com\empresa\clientes\config\KafkaProperties.class
 com\empresa\clientes\entity\Cliente.class
 com\empresa\clientes\mapper\ClienteMapper.class
 com\empresa\clientes\dto\ClienteResponseEvent.class
+com\empresa\clientes\validation\CpfValidator.class
 com\empresa\clientes\exception\DatabaseException.class
 com\empresa\clientes\service\ClienteService.class
 com\empresa\clientes\repository\ClienteRepository.class
+com\empresa\clientes\validation\CpfValid.class
 com\empresa\clientes\config\CorrelationIdFilter.class
 com\empresa\clientes\ClientesServiceApplication.class
 com\empresa\clientes\dto\ClienteCreateEvent.class
@@ -43,3 +45,4 @@ com\empresa\clientes\config\JdbiConfig.class
 com\empresa\clientes\config\RepositoryConfig.class
 com\empresa\clientes\dto\ClienteAcceptedResponse.class
 com\empresa\clientes\exception\NotFoundException.class
+com\empresa\clientes\util\CpfUtil.class

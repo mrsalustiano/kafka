@@ -10,3 +10,4 @@ D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\test\java\com\e
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\test\java\com\empresa\broker\service\ClienteProcessamentoServiceTest.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\test\java\com\empresa\broker\service\IdempotenciaServiceTest.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\test\java\com\empresa\broker\util\CorrelationIdUtilTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\test\java\com\empresa\broker\util\CpfUtilTest.java

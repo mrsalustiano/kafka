@@ -9,7 +9,7 @@ import java.util.Set;
 public final class PageResponseUtil {
 
     private static final Set<String> ALLOWED_SORT_FIELDS = Set.of(
-            "codigo_cliente", "nome", "email", "cidade", "data_criacao", "data_atualizacao"
+            "codigo_cliente", "nome", "cpf", "email", "cidade", "data_criacao", "data_atualizacao"
     );
 
     private PageResponseUtil() {
