@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ClienteCreateProducer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">clientes-service</a> &gt; <a href="index.source.html" class="el_package">com.empresa.clientes.producer</a> &gt; <span class="el_source">ClienteCreateProducer.java</span></div><h1>ClienteCreateProducer.java</h1><pre class="source lang-java linenums">package com.empresa.clientes.producer;
+
+import com.empresa.clientes.config.KafkaProperties;
+import com.empresa.clientes.dto.ClienteCreateEvent;
+import com.empresa.clientes.exception.KafkaPublishException;
+import com.empresa.clientes.exception.TimeoutException;
+import com.empresa.clientes.util.CorrelationIdUtil;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.header.internals.RecordHeader;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.stereotype.Service;
+
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+
+<span class="fc" id="L23">@Slf4j</span>
+@Service
+@RequiredArgsConstructor
+public class ClienteCreateProducer {
+
+    private final KafkaTemplate&lt;String, Object&gt; kafkaTemplate;
+    private final KafkaProperties kafkaProperties;
+
+    @Value(&quot;${app.correlation-id.header}&quot;)
+    private String correlationHeader;
+
+    @Retryable(
+            retryFor = KafkaPublishException.class,
+            maxAttemptsExpression = &quot;${app.kafka.retry.max-attempts:3}&quot;,
+            backoff = @Backoff(
+                    delayExpression = &quot;${app.kafka.retry.initial-delay-ms:500}&quot;,
+                    multiplierExpression = &quot;${app.kafka.retry.multiplier:2.0}&quot;
+            )
+    )
+    public void publicar(ClienteCreateEvent event) {
+        try {
+<span class="fc" id="L44">            String topic = kafkaProperties.topics().clientCreate();</span>
+<span class="fc" id="L45">            ProducerRecord&lt;String, Object&gt; record = new ProducerRecord&lt;&gt;(topic, event.eventId(), event);</span>
+
+<span class="fc" id="L47">            String correlationId = CorrelationIdUtil.get();</span>
+<span class="pc bpc" id="L48" title="1 of 4 branches missed.">            if (correlationId != null &amp;&amp; !correlationId.isBlank()) {</span>
+<span class="fc" id="L49">                record.headers().add(new RecordHeader(</span>
+                        correlationHeader,
+<span class="fc" id="L51">                        correlationId.getBytes(StandardCharsets.UTF_8)</span>
+                ));
+            }
+
+<span class="fc" id="L55">            SendResult&lt;String, Object&gt; result = kafkaTemplate.send(record)</span>
+<span class="fc" id="L56">                    .get(kafkaProperties.timeoutMs(), TimeUnit.MILLISECONDS);</span>
+
+<span class="fc" id="L58">            log.info(&quot;Evento client-create publicado: eventId={}, topico={}, particao={}&quot;,</span>
+<span class="fc" id="L59">                    event.eventId(), topic, result.getRecordMetadata().partition());</span>
+<span class="fc" id="L60">        } catch (java.util.concurrent.TimeoutException ex) {</span>
+<span class="fc" id="L61">            throw new TimeoutException(&quot;Timeout ao publicar evento no Kafka: &quot; + event.eventId(), ex);</span>
+<span class="fc" id="L62">        } catch (InterruptedException ex) {</span>
+<span class="fc" id="L63">            Thread.currentThread().interrupt();</span>
+<span class="fc" id="L64">            throw new KafkaPublishException(&quot;Publicacao Kafka interrompida: &quot; + event.eventId(), ex);</span>
+<span class="fc" id="L65">        } catch (ExecutionException ex) {</span>
+<span class="fc" id="L66">            throw new KafkaPublishException(&quot;Erro ao publicar evento no Kafka: &quot; + event.eventId(), ex.getCause());</span>
+<span class="fc" id="L67">        } catch (Exception ex) {</span>
+<span class="fc" id="L68">            throw new KafkaPublishException(&quot;Erro ao publicar evento no Kafka: &quot; + event.eventId(), ex);</span>
+<span class="fc" id="L69">        }</span>
+<span class="fc" id="L70">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

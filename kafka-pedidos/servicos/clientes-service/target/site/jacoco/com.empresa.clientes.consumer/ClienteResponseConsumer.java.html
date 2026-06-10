@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ClienteResponseConsumer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">clientes-service</a> &gt; <a href="index.source.html" class="el_package">com.empresa.clientes.consumer</a> &gt; <span class="el_source">ClienteResponseConsumer.java</span></div><h1>ClienteResponseConsumer.java</h1><pre class="source lang-java linenums">package com.empresa.clientes.consumer;
+
+import com.empresa.clientes.audit.AuditoriaService;
+import com.empresa.clientes.audit.OperacaoAuditoria;
+import com.empresa.clientes.dto.ClienteResponseEvent;
+import com.empresa.clientes.exception.KafkaConsumeException;
+import com.empresa.clientes.repository.ClienteStatusRepository;
+import com.empresa.clientes.service.IdempotenciaService;
+import com.empresa.clientes.util.CorrelationIdUtil;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.stereotype.Component;
+
+<span class="fc" id="L18">@Slf4j</span>
+@Component
+@RequiredArgsConstructor
+public class ClienteResponseConsumer {
+
+    private final IdempotenciaService idempotenciaService;
+    private final ClienteStatusRepository clienteStatusRepository;
+    private final AuditoriaService auditoriaService;
+
+    @KafkaListener(
+            topics = &quot;${app.kafka.topics.client-response}&quot;,
+            groupId = &quot;${spring.kafka.consumer.group-id}&quot;,
+            containerFactory = &quot;kafkaListenerContainerFactory&quot;
+    )
+    public void consumir(
+            @Payload ClienteResponseEvent event,
+            @Header(name = &quot;${app.correlation-id.header}&quot;, required = false) String correlationId) {
+        try {
+<span class="pc bpc" id="L36" title="1 of 4 branches missed.">            if (correlationId != null &amp;&amp; !correlationId.isBlank()) {</span>
+<span class="fc" id="L37">                CorrelationIdUtil.set(correlationId);</span>
+<span class="fc" id="L38">                MDC.put(&quot;correlationId&quot;, correlationId);</span>
+            }
+
+<span class="fc bfc" id="L41" title="All 4 branches covered.">            if (event.eventId() == null || event.eventId().isBlank()) {</span>
+<span class="fc" id="L42">                log.warn(&quot;Evento client-response ignorado: eventId ausente&quot;);</span>
+<span class="fc" id="L43">                return;</span>
+            }
+
+<span class="fc bfc" id="L46" title="All 2 branches covered.">            if (idempotenciaService.jaProcessado(event.eventId())) {</span>
+<span class="fc" id="L47">                log.warn(&quot;Evento duplicado ignorado: eventId={}&quot;, event.eventId());</span>
+<span class="fc" id="L48">                return;</span>
+            }
+
+<span class="fc" id="L51">            log.info(&quot;Cliente criado com id {}&quot;, event.codigoCliente());</span>
+
+<span class="fc" id="L53">            clienteStatusRepository.upsert(event.codigoCliente(), event.status());</span>
+<span class="fc" id="L54">            idempotenciaService.registrar(event.eventId());</span>
+
+<span class="fc" id="L56">            auditoriaService.registrar(</span>
+                    OperacaoAuditoria.PROCESSAMENTO_KAFKA,
+<span class="fc" id="L58">                    event.codigoCliente(),</span>
+<span class="fc" id="L59">                    &quot;Cliente criado com status &quot; + event.status() + &quot;, eventId=&quot; + event.eventId()</span>
+            );
+<span class="fc" id="L61">        } catch (Exception ex) {</span>
+<span class="fc" id="L62">            throw new KafkaConsumeException(</span>
+<span class="fc" id="L63">                    &quot;Erro ao processar evento client-response: &quot; + event.eventId(), ex</span>
+            );
+        } finally {
+<span class="fc" id="L66">            CorrelationIdUtil.clear();</span>
+<span class="fc" id="L67">            MDC.remove(&quot;correlationId&quot;);</span>
+        }
+<span class="fc" id="L69">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

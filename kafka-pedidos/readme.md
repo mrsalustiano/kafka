@@ -109,8 +109,6 @@ O `start` e o `reset` aguardam o Kafka ficar saudável e executam a criação do
 - Redis Insight: [http://localhost:5540](http://localhost:5540)
 - SonarQube: [http://localhost:9000](http://localhost:9000) (login padrão: `admin` / `admin`)
 
-
-
 Migrations Flyway criadas conforme a skill **kafka-pedidos**, compatíveis com **MySQL 8**.
 
 ## **Localização**
@@ -177,4 +175,3 @@ docker exec -i kafka-pedidos-mysql mysql -ukafka_user -pkafka_pass kafka_pedidos
 *# ... repetir V2 a V6 na ordem*
 
 Quando os microsserviços forem implementados, aponte o Flyway para `classpath:db/migration` (copiando estes arquivos) ou configure `spring.flyway.locations=filesystem:../../infraestrutura/mysql/flyway` no serviço que executará as migrations.
-

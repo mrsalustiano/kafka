@@ -1,0 +1,15 @@
+com\empresa\clientes\util\CorrelationIdUtilTest.class
+com\empresa\clientes\exception\GlobalExceptionHandlerTest.class
+com\empresa\clientes\config\CorrelationIdFilterTest.class
+com\empresa\clientes\controller\ClienteControllerTest.class
+com\empresa\clientes\config\KafkaPropertiesTest.class
+com\empresa\clientes\config\KafkaHealthIndicatorTest.class
+com\empresa\clientes\producer\ClienteCreateProducerTest.class
+com\empresa\clientes\audit\AuditoriaServiceTest.class
+com\empresa\clientes\mapper\ClienteMapperTest.class
+com\empresa\clientes\util\PageResponseUtilTest.class
+com\empresa\clientes\config\ConfigBeansTest.class
+com\empresa\clientes\consumer\ClienteResponseConsumerTest.class
+com\empresa\clientes\service\IdempotenciaServiceTest.class
+com\empresa\clientes\exception\ExceptionClassesTest.class
+com\empresa\clientes\service\ClienteServiceTest.class
