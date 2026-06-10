@@ -31,7 +31,7 @@ pedidos-service,com.empresa.pedidos.exception,ValidationException,0,4,0,0,0,2,0,
 pedidos-service,com.empresa.pedidos.exception,DatabaseException,0,5,0,0,0,2,0,1,0,1
 pedidos-service,com.empresa.pedidos.exception,KafkaConsumeException,0,5,0,0,0,2,0,1,0,1
 pedidos-service,com.empresa.pedidos.exception,NotFoundException,0,4,0,0,0,2,0,1,0,1
-pedidos-service,com.empresa.pedidos.exception,RedisException,0,5,0,0,0,2,0,1,0,1
+pedidos-service,com.empresa.pedidos.exception,RedisException,0,9,0,0,0,4,0,2,0,2
 pedidos-service,com.empresa.pedidos.controller,PedidoController,0,36,0,0,0,5,0,5,0,5
 pedidos-service,com.empresa.pedidos.consumer,PedidoResponseConsumer,0,92,3,9,0,26,3,5,0,2
 pedidos-service,com.empresa.pedidos.dto,PedidoResponse,0,27,0,0,0,1,0,1,0,1

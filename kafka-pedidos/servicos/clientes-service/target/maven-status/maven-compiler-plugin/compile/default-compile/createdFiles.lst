@@ -23,6 +23,7 @@ com\empresa\clientes\repository\AuditoriaRepository.class
 com\empresa\clientes\service\IdempotenciaService.class
 com\empresa\clientes\dto\PageResponse.class
 com\empresa\clientes\repository\ClienteStatusRepository.class
+com\empresa\clientes\exception\RedisException.class
 com\empresa\clientes\mapper\ClienteMapperImpl.class
 com\empresa\clientes\config\KafkaProperties.class
 com\empresa\clientes\entity\Cliente.class

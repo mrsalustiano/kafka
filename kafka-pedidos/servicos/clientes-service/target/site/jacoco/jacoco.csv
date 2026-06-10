@@ -27,11 +27,12 @@ clientes-service,com.empresa.clientes,ClientesServiceApplication,8,0,0,0,3,0,2,0
 clientes-service,com.empresa.clientes.mapper,ClienteMapperImpl,8,176,4,6,4,52,4,6,0,5
 clientes-service,com.empresa.clientes.exception,KafkaPublishException,0,5,0,0,0,2,0,1,0,1
 clientes-service,com.empresa.clientes.exception,ErrorResponse,0,18,0,0,0,1,0,1,0,1
-clientes-service,com.empresa.clientes.exception,GlobalExceptionHandler,0,109,0,0,0,21,0,12,0,12
+clientes-service,com.empresa.clientes.exception,GlobalExceptionHandler,0,116,0,0,0,22,0,13,0,13
 clientes-service,com.empresa.clientes.exception,TimeoutException,0,9,0,0,0,4,0,2,0,2
 clientes-service,com.empresa.clientes.exception,BusinessException,0,4,0,0,0,2,0,1,0,1
 clientes-service,com.empresa.clientes.exception,NotFoundException,0,4,0,0,0,2,0,1,0,1
 clientes-service,com.empresa.clientes.exception,DatabaseException,0,5,0,0,0,2,0,1,0,1
 clientes-service,com.empresa.clientes.exception,ValidationException,0,4,0,0,0,2,0,1,0,1
+clientes-service,com.empresa.clientes.exception,RedisException,0,9,0,0,0,4,0,2,0,2
 clientes-service,com.empresa.clientes.exception,KafkaConsumeException,0,5,0,0,0,2,0,1,0,1
 clientes-service,com.empresa.clientes.consumer,ClienteResponseConsumer,0,78,1,9,0,22,1,6,0,2

@@ -12,6 +12,8 @@ class ExceptionClassesTest {
         assertThat(new NotFoundException("msg").getMessage()).isEqualTo("msg");
         assertThat(new ValidationException("msg").getMessage()).isEqualTo("msg");
         assertThat(new DatabaseException("msg", new RuntimeException()).getMessage()).isEqualTo("msg");
+        assertThat(new RedisException("msg").getMessage()).isEqualTo("msg");
+        assertThat(new RedisException("msg", new RuntimeException()).getMessage()).isEqualTo("msg");
         assertThat(new KafkaPublishException("msg", new RuntimeException()).getMessage()).isEqualTo("msg");
         assertThat(new KafkaConsumeException("msg", new RuntimeException()).getMessage()).isEqualTo("msg");
         assertThat(new TimeoutException("msg").getMessage()).isEqualTo("msg");

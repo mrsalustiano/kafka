@@ -26,6 +26,7 @@ D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\main\java\com
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\main\java\com\empresa\clientes\exception\KafkaConsumeException.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\main\java\com\empresa\clientes\exception\KafkaPublishException.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\main\java\com\empresa\clientes\exception\NotFoundException.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\main\java\com\empresa\clientes\exception\RedisException.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\main\java\com\empresa\clientes\exception\TimeoutException.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\main\java\com\empresa\clientes\exception\ValidationException.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\main\java\com\empresa\clientes\mapper\ClienteMapper.java

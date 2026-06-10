@@ -14,9 +14,14 @@ D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\main\java\com\e
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\main\java\com\empresa\broker\entity\Cliente.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\main\java\com\empresa\broker\exception\BusinessException.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\main\java\com\empresa\broker\exception\DatabaseException.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\main\java\com\empresa\broker\exception\ErrorResponse.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\main\java\com\empresa\broker\exception\GlobalExceptionHandler.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\main\java\com\empresa\broker\exception\KafkaConsumeException.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\main\java\com\empresa\broker\exception\KafkaPublishException.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\main\java\com\empresa\broker\exception\NotFoundException.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\main\java\com\empresa\broker\exception\RedisException.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\main\java\com\empresa\broker\exception\TimeoutException.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\main\java\com\empresa\broker\exception\ValidationException.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\main\java\com\empresa\broker\producer\ClienteResponseProducer.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\main\java\com\empresa\broker\repository\AuditoriaRepository.java
 D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\main\java\com\empresa\broker\repository\ClienteRepository.java

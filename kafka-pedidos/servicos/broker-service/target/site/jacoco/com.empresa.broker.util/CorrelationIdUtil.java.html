@@ -26,7 +26,7 @@ public final class CorrelationIdUtil {
 
     public static String getOrGenerate() {
 <span class="fc" id="L28">        String correlationId = get();</span>
-<span class="pc bpc" id="L29" title="1 of 2 branches missed.">        return correlationId != null ? correlationId : resolveOrGenerate(null);</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">        return correlationId != null ? correlationId : resolveOrGenerate(null);</span>
     }
 
     public static void clear() {

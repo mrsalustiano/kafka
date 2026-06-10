@@ -1,3 +1,4 @@
+com\empresa\broker\exception\NotFoundException.class
 com\empresa\broker\producer\ClienteResponseProducer.class
 com\empresa\broker\audit\OperacaoAuditoria.class
 com\empresa\broker\config\KafkaConfig.class
@@ -11,6 +12,7 @@ com\empresa\broker\config\RepositoryConfig.class
 com\empresa\broker\config\KafkaProperties$Topics.class
 com\empresa\broker\BrokerServiceApplication.class
 com\empresa\broker\config\CorrelationIdFilter.class
+com\empresa\broker\exception\GlobalExceptionHandler.class
 com\empresa\broker\exception\TimeoutException.class
 com\empresa\broker\service\ClienteProcessamentoService.class
 com\empresa\broker\service\IdempotenciaService.class
@@ -19,11 +21,14 @@ com\empresa\broker\repository\AuditoriaRepository.class
 com\empresa\broker\consumer\ClienteCreateConsumer.class
 com\empresa\broker\exception\BusinessException.class
 com\empresa\broker\util\CorrelationIdUtil.class
+com\empresa\broker\exception\ErrorResponse.class
 com\empresa\broker\repository\ClienteRepository.class
 com\empresa\broker\dto\ClienteResponseEvent.class
+com\empresa\broker\exception\RedisException.class
 com\empresa\broker\config\KafkaHealthIndicator.class
 com\empresa\broker\entity\Cliente$ClienteBuilder.class
 com\empresa\broker\entity\Cliente.class
 com\empresa\broker\config\KafkaProperties$Retry.class
 com\empresa\broker\dto\ClienteCreateEvent.class
+com\empresa\broker\exception\ValidationException.class
 com\empresa\broker\config\JdbiConfig.class

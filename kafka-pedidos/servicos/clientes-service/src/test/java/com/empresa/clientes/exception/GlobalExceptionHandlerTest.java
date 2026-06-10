@@ -99,6 +99,14 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
+    void handleRedis() {
+        ResponseEntity<ErrorResponse> response = handler.handleRedis(
+                new RedisException("redis down"), request);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
+    }
+
+    @Test
     void handleKafkaPublish() {
         ResponseEntity<ErrorResponse> response = handler.handleKafkaPublish(
                 new KafkaPublishException("kafka", new RuntimeException()), request);
