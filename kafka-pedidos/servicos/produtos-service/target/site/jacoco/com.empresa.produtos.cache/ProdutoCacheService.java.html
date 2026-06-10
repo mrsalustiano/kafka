@@ -38,7 +38,7 @@ public class ProdutoCacheService {
     public Optional&lt;ProdutoResponse&gt; buscarPorId(Long id) {
         try {
 <span class="fc" id="L40">            String json = redisTemplate.opsForValue().get(CacheKeyConstants.produtoKey(id));</span>
-<span class="pc bpc" id="L41" title="1 of 4 branches missed.">            if (json == null || json.isBlank()) {</span>
+<span class="fc bfc" id="L41" title="All 4 branches covered.">            if (json == null || json.isBlank()) {</span>
 <span class="fc" id="L42">                return Optional.empty();</span>
             }
 <span class="fc" id="L44">            return Optional.of(objectMapper.readValue(json, ProdutoResponse.class));</span>

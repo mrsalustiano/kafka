@@ -57,4 +57,19 @@ class PedidoMapperTest {
         assertThat(cacheDto.codigoProduto()).isEqualTo(1L);
         assertThat(cacheDto.ativo()).isEqualTo("S");
     }
+
+    @Test
+    void toResponse_quandoNull_deveRetornarNull() {
+        assertThat(mapper.toResponse(null)).isNull();
+    }
+
+    @Test
+    void toResponseList_quandoNull_deveRetornarNull() {
+        assertThat(mapper.toResponseList(null)).isNull();
+    }
+
+    @Test
+    void toCacheDto_quandoNull_deveRetornarNull() {
+        assertThat(mapper.toCacheDto(null)).isNull();
+    }
 }

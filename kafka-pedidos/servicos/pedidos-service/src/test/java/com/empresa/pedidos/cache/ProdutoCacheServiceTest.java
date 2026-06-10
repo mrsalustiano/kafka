@@ -3,8 +3,7 @@ package com.empresa.pedidos.cache;
 import com.empresa.pedidos.config.RedisProperties;
 import com.empresa.pedidos.dto.ProdutoCacheDto;
 import com.empresa.pedidos.exception.RedisException;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -105,5 +105,24 @@ class ProdutoCacheServiceTest {
     void recoverSalvarProduto_naoDevePropagar() {
         produtoCacheService.recoverSalvarProduto(
                 new RedisException("erro", new RuntimeException()), produto);
+    }
+
+    @Test
+    void buscarPorId_quandoJsonBlank_deveRetornarVazio() {
+        when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+        when(valueOperations.get("produto:1")).thenReturn("   ");
+
+        assertThat(produtoCacheService.buscarPorId(1L)).isEmpty();
+    }
+
+    @Test
+    void salvarProduto_quandoErroSerializacao_deveLancarRedisException() throws Exception {
+        ObjectMapper failingMapper = mock(ObjectMapper.class);
+        when(failingMapper.writeValueAsString(produto)).thenThrow(new JsonProcessingException("erro") {
+        });
+        ProdutoCacheService service = new ProdutoCacheService(redisTemplate, failingMapper, redisProperties);
+
+        assertThatThrownBy(() -> service.salvarProduto(produto))
+                .isInstanceOf(RedisException.class);
     }
 }

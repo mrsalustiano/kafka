@@ -36,7 +36,7 @@ public class ProdutoCacheService {
     public Optional&lt;ProdutoCacheDto&gt; buscarPorId(Long id) {
         try {
 <span class="fc" id="L38">            String json = redisTemplate.opsForValue().get(CacheKeyConstants.produtoKey(id));</span>
-<span class="pc bpc" id="L39" title="1 of 4 branches missed.">            if (json == null || json.isBlank()) {</span>
+<span class="fc bfc" id="L39" title="All 4 branches covered.">            if (json == null || json.isBlank()) {</span>
 <span class="fc" id="L40">                return Optional.empty();</span>
             }
 <span class="fc" id="L42">            return Optional.of(objectMapper.readValue(json, ProdutoCacheDto.class));</span>
@@ -67,8 +67,8 @@ public class ProdutoCacheService {
                     json,
 <span class="fc" id="L68">                    ttlDuration()</span>
             );
-<span class="nc" id="L70">        } catch (JsonProcessingException ex) {</span>
-<span class="nc" id="L71">            throw new RedisException(&quot;Erro ao serializar produto para Redis&quot;, ex);</span>
+<span class="fc" id="L70">        } catch (JsonProcessingException ex) {</span>
+<span class="fc" id="L71">            throw new RedisException(&quot;Erro ao serializar produto para Redis&quot;, ex);</span>
 <span class="fc" id="L72">        } catch (Exception ex) {</span>
 <span class="fc" id="L73">            throw new RedisException(&quot;Erro ao salvar produto no Redis&quot;, ex);</span>
 <span class="fc" id="L74">        }</span>

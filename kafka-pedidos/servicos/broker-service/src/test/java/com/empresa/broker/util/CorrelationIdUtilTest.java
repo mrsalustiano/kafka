@@ -31,6 +31,11 @@ class CorrelationIdUtilTest {
     }
 
     @Test
+    void resolveOrGenerate_comHeaderBlank_deveGerarUuid() {
+        assertThat(CorrelationIdUtil.resolveOrGenerate("   ")).isNotBlank();
+    }
+
+    @Test
     void getOrGenerate_quandoAusente_deveGerarUuid() {
         assertThat(CorrelationIdUtil.getOrGenerate()).isNotBlank();
     }

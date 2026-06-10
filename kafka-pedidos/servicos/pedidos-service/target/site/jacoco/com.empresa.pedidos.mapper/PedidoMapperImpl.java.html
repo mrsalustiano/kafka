@@ -21,8 +21,8 @@ import org.springframework.stereotype.Component;
 
     @Override
     public PedidoResponse toResponse(Pedido pedido) {
-<span class="pc bpc" id="L24" title="1 of 2 branches missed.">        if ( pedido == null ) {</span>
-<span class="nc" id="L25">            return null;</span>
+<span class="fc bfc" id="L24" title="All 2 branches covered.">        if ( pedido == null ) {</span>
+<span class="fc" id="L25">            return null;</span>
         }
 
 <span class="fc" id="L28">        Long codigoPedido = null;</span>
@@ -50,8 +50,8 @@ import org.springframework.stereotype.Component;
 
     @Override
     public List&lt;PedidoResponse&gt; toResponseList(List&lt;Pedido&gt; pedidos) {
-<span class="pc bpc" id="L53" title="1 of 2 branches missed.">        if ( pedidos == null ) {</span>
-<span class="nc" id="L54">            return null;</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">        if ( pedidos == null ) {</span>
+<span class="fc" id="L54">            return null;</span>
         }
 
 <span class="fc" id="L57">        List&lt;PedidoResponse&gt; list = new ArrayList&lt;PedidoResponse&gt;( pedidos.size() );</span>
@@ -64,8 +64,8 @@ import org.springframework.stereotype.Component;
 
     @Override
     public ProdutoCacheDto toCacheDto(Produto produto) {
-<span class="pc bpc" id="L67" title="1 of 2 branches missed.">        if ( produto == null ) {</span>
-<span class="nc" id="L68">            return null;</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">        if ( produto == null ) {</span>
+<span class="fc" id="L68">            return null;</span>
         }
 
 <span class="fc" id="L71">        Long codigoProduto = null;</span>

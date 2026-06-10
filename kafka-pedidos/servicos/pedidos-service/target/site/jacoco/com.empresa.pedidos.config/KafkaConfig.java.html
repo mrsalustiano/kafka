@@ -105,9 +105,9 @@ public class KafkaConfig {
     public DefaultErrorHandler kafkaErrorHandler(KafkaTemplate&lt;String, Object&gt; kafkaTemplate) {
 <span class="fc" id="L106">        DeadLetterPublishingRecoverer recoverer = new DeadLetterPublishingRecoverer(</span>
                 kafkaTemplate,
-<span class="nc" id="L108">                (record, ex) -&gt; new TopicPartition(</span>
-<span class="nc" id="L109">                        kafkaProperties.topics().pedidoResponseDlt(),</span>
-<span class="nc" id="L110">                        record.partition()</span>
+<span class="fc" id="L108">                (record, ex) -&gt; new TopicPartition(</span>
+<span class="fc" id="L109">                        kafkaProperties.topics().pedidoResponseDlt(),</span>
+<span class="fc" id="L110">                        record.partition()</span>
                 )
         );
 

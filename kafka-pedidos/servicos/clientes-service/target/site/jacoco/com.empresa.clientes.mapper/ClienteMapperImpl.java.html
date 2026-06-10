@@ -21,8 +21,8 @@ import org.springframework.stereotype.Component;
 
     @Override
     public ClienteResponse toResponse(Cliente cliente) {
-<span class="pc bpc" id="L24" title="1 of 2 branches missed.">        if ( cliente == null ) {</span>
-<span class="nc" id="L25">            return null;</span>
+<span class="fc bfc" id="L24" title="All 2 branches covered.">        if ( cliente == null ) {</span>
+<span class="fc" id="L25">            return null;</span>
         }
 
 <span class="fc" id="L28">        Long codigoCliente = null;</span>
@@ -56,8 +56,8 @@ import org.springframework.stereotype.Component;
 
     @Override
     public List&lt;ClienteResponse&gt; toResponseList(List&lt;Cliente&gt; clientes) {
-<span class="pc bpc" id="L59" title="1 of 2 branches missed.">        if ( clientes == null ) {</span>
-<span class="nc" id="L60">            return null;</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        if ( clientes == null ) {</span>
+<span class="fc" id="L60">            return null;</span>
         }
 
 <span class="fc" id="L63">        List&lt;ClienteResponse&gt; list = new ArrayList&lt;ClienteResponse&gt;( clientes.size() );</span>
@@ -70,8 +70,8 @@ import org.springframework.stereotype.Component;
 
     @Override
     public ClienteStatusResponse toStatusResponse(ClienteStatus clienteStatus) {
-<span class="pc bpc" id="L73" title="1 of 2 branches missed.">        if ( clienteStatus == null ) {</span>
-<span class="nc" id="L74">            return null;</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        if ( clienteStatus == null ) {</span>
+<span class="fc" id="L74">            return null;</span>
         }
 
 <span class="fc" id="L77">        Long codigoCliente = null;</span>
@@ -89,8 +89,8 @@ import org.springframework.stereotype.Component;
 
     @Override
     public Cliente toEntity(ClienteRequest request) {
-<span class="pc bpc" id="L92" title="1 of 2 branches missed.">        if ( request == null ) {</span>
-<span class="nc" id="L93">            return null;</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">        if ( request == null ) {</span>
+<span class="fc" id="L93">            return null;</span>
         }
 
 <span class="fc" id="L96">        Cliente.ClienteBuilder cliente = Cliente.builder();</span>

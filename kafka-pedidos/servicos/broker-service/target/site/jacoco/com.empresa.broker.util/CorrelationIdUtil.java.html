@@ -10,7 +10,7 @@ public final class CorrelationIdUtil {
     }
 
     public static String resolveOrGenerate(String headerValue) {
-<span class="pc bpc" id="L13" title="1 of 4 branches missed.">        if (headerValue != null &amp;&amp; !headerValue.isBlank()) {</span>
+<span class="fc bfc" id="L13" title="All 4 branches covered.">        if (headerValue != null &amp;&amp; !headerValue.isBlank()) {</span>
 <span class="fc" id="L14">            return headerValue.trim();</span>
         }
 <span class="fc" id="L16">        return UUID.randomUUID().toString();</span>

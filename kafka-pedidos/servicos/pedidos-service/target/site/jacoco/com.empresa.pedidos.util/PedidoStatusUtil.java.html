@@ -21,7 +21,7 @@ public final class PedidoStatusUtil {
     }
 
     public static void validar(String status) {
-<span class="pc bpc" id="L24" title="1 of 4 branches missed.">        if (status == null || status.isBlank()) {</span>
+<span class="fc bfc" id="L24" title="All 4 branches covered.">        if (status == null || status.isBlank()) {</span>
 <span class="fc" id="L25">            throw new ValidationException(&quot;Status e obrigatorio&quot;);</span>
         }
 <span class="fc bfc" id="L27" title="All 2 branches covered.">        if (!STATUS_VALIDOS.contains(status)) {</span>

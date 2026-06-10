@@ -75,7 +75,7 @@ public class PedidoService {
 <span class="fc" id="L75">            pedidoCreateProducer.publicar(event);</span>
 
 <span class="fc" id="L77">            Pedido salvo = pedidoRepository.findById(codigoPedido)</span>
-<span class="pc" id="L78">                    .orElseThrow(() -&gt; new NotFoundException(&quot;Pedido nao encontrado apos criacao&quot;));</span>
+<span class="fc" id="L78">                    .orElseThrow(() -&gt; new NotFoundException(&quot;Pedido nao encontrado apos criacao&quot;));</span>
 <span class="fc" id="L79">            auditoriaService.registrar(</span>
                     OperacaoAuditoria.CREATE,
 <span class="fc" id="L81">                    codigoPedido,</span>
@@ -125,8 +125,8 @@ public class PedidoService {
 <span class="fc" id="L125">                    .orElseThrow(() -&gt; new NotFoundException(&quot;Pedido nao encontrado: &quot; + id));</span>
 
 <span class="fc" id="L127">            clienteRepository.findAtivoById(request.codigoCliente())</span>
-<span class="pc" id="L128">                    .orElseThrow(() -&gt; new ValidationException(</span>
-<span class="nc" id="L129">                            &quot;Cliente inativo ou nao encontrado: &quot; + request.codigoCliente()));</span>
+<span class="fc" id="L128">                    .orElseThrow(() -&gt; new ValidationException(</span>
+<span class="fc" id="L129">                            &quot;Cliente inativo ou nao encontrado: &quot; + request.codigoCliente()));</span>
 <span class="fc" id="L130">            produtoConsultaService.buscarProdutoAtivo(request.codigoProduto());</span>
 
 <span class="fc" id="L132">            existente.setCodigoCliente(request.codigoCliente());</span>
@@ -144,8 +144,8 @@ public class PedidoService {
 <span class="fc" id="L144">            return pedidoMapper.toResponse(atualizado);</span>
 <span class="fc" id="L145">        } catch (NotFoundException | ValidationException ex) {</span>
 <span class="fc" id="L146">            throw ex;</span>
-<span class="nc" id="L147">        } catch (Exception ex) {</span>
-<span class="nc" id="L148">            throw new DatabaseException(&quot;Erro ao atualizar pedido: &quot; + id, ex);</span>
+<span class="fc" id="L147">        } catch (Exception ex) {</span>
+<span class="fc" id="L148">            throw new DatabaseException(&quot;Erro ao atualizar pedido: &quot; + id, ex);</span>
         }
     }
 
@@ -172,8 +172,8 @@ public class PedidoService {
 <span class="fc" id="L172">            return pedidoMapper.toResponse(atualizado);</span>
 <span class="fc" id="L173">        } catch (NotFoundException | ValidationException ex) {</span>
 <span class="fc" id="L174">            throw ex;</span>
-<span class="nc" id="L175">        } catch (Exception ex) {</span>
-<span class="nc" id="L176">            throw new DatabaseException(&quot;Erro ao atualizar status do pedido: &quot; + id, ex);</span>
+<span class="fc" id="L175">        } catch (Exception ex) {</span>
+<span class="fc" id="L176">            throw new DatabaseException(&quot;Erro ao atualizar status do pedido: &quot; + id, ex);</span>
         }
     }
 }

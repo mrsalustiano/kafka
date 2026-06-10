@@ -20,8 +20,8 @@ import org.springframework.stereotype.Component;
 
     @Override
     public ProdutoResponse toResponse(Produto produto) {
-<span class="pc bpc" id="L23" title="1 of 2 branches missed.">        if ( produto == null ) {</span>
-<span class="nc" id="L24">            return null;</span>
+<span class="fc bfc" id="L23" title="All 2 branches covered.">        if ( produto == null ) {</span>
+<span class="fc" id="L24">            return null;</span>
         }
 
 <span class="fc" id="L27">        Long codigoProduto = null;</span>
@@ -45,8 +45,8 @@ import org.springframework.stereotype.Component;
 
     @Override
     public List&lt;ProdutoResponse&gt; toResponseList(List&lt;Produto&gt; produtos) {
-<span class="pc bpc" id="L48" title="1 of 2 branches missed.">        if ( produtos == null ) {</span>
-<span class="nc" id="L49">            return null;</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">        if ( produtos == null ) {</span>
+<span class="fc" id="L49">            return null;</span>
         }
 
 <span class="fc" id="L52">        List&lt;ProdutoResponse&gt; list = new ArrayList&lt;ProdutoResponse&gt;( produtos.size() );</span>
@@ -59,8 +59,8 @@ import org.springframework.stereotype.Component;
 
     @Override
     public Produto toEntity(ProdutoRequest request) {
-<span class="pc bpc" id="L62" title="1 of 2 branches missed.">        if ( request == null ) {</span>
-<span class="nc" id="L63">            return null;</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">        if ( request == null ) {</span>
+<span class="fc" id="L63">            return null;</span>
         }
 
 <span class="fc" id="L66">        Produto.ProdutoBuilder produto = Produto.builder();</span>

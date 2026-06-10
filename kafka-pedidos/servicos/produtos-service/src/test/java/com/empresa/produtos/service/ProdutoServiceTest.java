@@ -211,6 +211,17 @@ class ProdutoServiceTest {
     }
 
     @Test
+    void atualizar_quandoNaoEncontradoAposUpdate_deveLancarNotFoundException() {
+        when(produtoRepository.findAtivoById(1L))
+                .thenReturn(Optional.of(produto))
+                .thenReturn(Optional.empty());
+        when(produtoRepository.update(produto)).thenReturn(1);
+
+        assertThatThrownBy(() -> produtoService.atualizar(1L, produtoRequest))
+                .isInstanceOf(NotFoundException.class);
+    }
+
+    @Test
     void excluirLogicamente_deveDesativarProduto() {
         when(produtoRepository.findAtivoById(1L)).thenReturn(Optional.of(produto));
         when(produtoRepository.desativar(1L)).thenReturn(1);

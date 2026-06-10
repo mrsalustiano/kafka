@@ -24,4 +24,10 @@ class PedidoStatusUtilTest {
         assertThatThrownBy(() -> PedidoStatusUtil.validar("  "))
                 .isInstanceOf(ValidationException.class);
     }
+
+    @Test
+    void validar_quandoStatusNull_deveLancar() {
+        assertThatThrownBy(() -> PedidoStatusUtil.validar(null))
+                .isInstanceOf(ValidationException.class);
+    }
 }

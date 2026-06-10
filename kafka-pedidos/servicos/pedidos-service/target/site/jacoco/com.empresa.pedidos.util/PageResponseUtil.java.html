@@ -17,12 +17,12 @@ public final class PageResponseUtil {
     }
 
     public static &lt;T&gt; PageResponse&lt;T&gt; of(List&lt;T&gt; content, int page, int size, long totalElements) {
-<span class="pc bpc" id="L20" title="1 of 2 branches missed.">        int totalPages = size == 0 ? 0 : (int) Math.ceil((double) totalElements / size);</span>
+<span class="fc bfc" id="L20" title="All 2 branches covered.">        int totalPages = size == 0 ? 0 : (int) Math.ceil((double) totalElements / size);</span>
 <span class="fc" id="L21">        int numberOfElements = content.size();</span>
 <span class="fc bfc" id="L22" title="All 2 branches covered.">        boolean empty = numberOfElements == 0;</span>
-<span class="pc bpc" id="L23" title="1 of 2 branches missed.">        boolean first = page == 0;</span>
-<span class="pc bpc" id="L24" title="3 of 4 branches missed.">        boolean last = page &gt;= totalPages - 1 || totalPages == 0;</span>
-<span class="pc bpc" id="L25" title="2 of 4 branches missed.">        return new PageResponse&lt;&gt;(</span>
+<span class="fc bfc" id="L23" title="All 2 branches covered.">        boolean first = page == 0;</span>
+<span class="pc bpc" id="L24" title="1 of 4 branches missed.">        boolean last = page &gt;= totalPages - 1 || totalPages == 0;</span>
+<span class="fc bfc" id="L25" title="All 4 branches covered.">        return new PageResponse&lt;&gt;(</span>
                 content,
                 page,
                 size,
@@ -38,7 +38,7 @@ public final class PageResponseUtil {
     }
 
     public static String resolveSortColumn(String sort) {
-<span class="pc bpc" id="L41" title="1 of 4 branches missed.">        if (sort == null || sort.isBlank()) {</span>
+<span class="fc bfc" id="L41" title="All 4 branches covered.">        if (sort == null || sort.isBlank()) {</span>
 <span class="fc" id="L42">            return &quot;codigo_pedido&quot;;</span>
         }
 <span class="fc" id="L44">        String column = sort.split(&quot;,&quot;)[0].trim();</span>
@@ -49,7 +49,7 @@ public final class PageResponseUtil {
     }
 
     public static String resolveSortDirection(String sort) {
-<span class="pc bpc" id="L52" title="1 of 4 branches missed.">        if (sort == null || !sort.contains(&quot;,&quot;)) {</span>
+<span class="fc bfc" id="L52" title="All 4 branches covered.">        if (sort == null || !sort.contains(&quot;,&quot;)) {</span>
 <span class="fc" id="L53">            return &quot;ASC&quot;;</span>
         }
 <span class="fc" id="L55">        String direction = sort.split(&quot;,&quot;)[1].trim().toUpperCase();</span>

@@ -83,6 +83,14 @@ class ProdutoCacheServiceTest {
     }
 
     @Test
+    void buscarPorId_quandoJsonBlank_deveRetornarVazio() {
+        when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+        when(valueOperations.get("produto:1")).thenReturn("   ");
+
+        assertThat(produtoCacheService.buscarPorId(1L)).isEmpty();
+    }
+
+    @Test
     void buscarPorId_quandoErro_deveLancarRedisException() {
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
         when(valueOperations.get("produto:1")).thenThrow(new RuntimeException("timeout"));

@@ -19,9 +19,9 @@ public final class PageResponseUtil {
 <span class="fc bfc" id="L19" title="All 2 branches covered.">        int totalPages = size == 0 ? 0 : (int) Math.ceil((double) totalElements / size);</span>
 <span class="fc" id="L20">        int numberOfElements = content.size();</span>
 <span class="fc bfc" id="L21" title="All 2 branches covered.">        boolean empty = numberOfElements == 0;</span>
-<span class="pc bpc" id="L22" title="1 of 2 branches missed.">        boolean first = page == 0;</span>
+<span class="fc bfc" id="L22" title="All 2 branches covered.">        boolean first = page == 0;</span>
 <span class="pc bpc" id="L23" title="1 of 4 branches missed.">        boolean last = page &gt;= totalPages - 1 || totalPages == 0;</span>
-<span class="pc bpc" id="L24" title="1 of 4 branches missed.">        return new PageResponse&lt;&gt;(</span>
+<span class="fc bfc" id="L24" title="All 4 branches covered.">        return new PageResponse&lt;&gt;(</span>
                 content,
                 page,
                 size,
@@ -37,7 +37,7 @@ public final class PageResponseUtil {
     }
 
     public static String resolveSortColumn(String sort) {
-<span class="pc bpc" id="L40" title="1 of 4 branches missed.">        if (sort == null || sort.isBlank()) {</span>
+<span class="fc bfc" id="L40" title="All 4 branches covered.">        if (sort == null || sort.isBlank()) {</span>
 <span class="fc" id="L41">            return &quot;codigo_produto&quot;;</span>
         }
 <span class="fc" id="L43">        String column = sort.split(&quot;,&quot;)[0].trim();</span>
@@ -48,7 +48,7 @@ public final class PageResponseUtil {
     }
 
     public static String resolveSortDirection(String sort) {
-<span class="pc bpc" id="L51" title="1 of 4 branches missed.">        if (sort == null || !sort.contains(&quot;,&quot;)) {</span>
+<span class="fc bfc" id="L51" title="All 4 branches covered.">        if (sort == null || !sort.contains(&quot;,&quot;)) {</span>
 <span class="fc" id="L52">            return &quot;ASC&quot;;</span>
         }
 <span class="fc" id="L54">        String direction = sort.split(&quot;,&quot;)[1].trim().toUpperCase();</span>

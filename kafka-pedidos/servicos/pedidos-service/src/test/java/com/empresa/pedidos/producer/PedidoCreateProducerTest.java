@@ -12,6 +12,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -67,6 +68,20 @@ class PedidoCreateProducerTest {
         sendFuture.complete(criarSendResult());
 
         pedidoCreateProducer.publicar(event);
+    }
+
+    @Test
+    void publicar_comCorrelationIdBlank_naoDeveAdicionarHeader() throws Exception {
+        CorrelationIdUtil.set("  ");
+        CompletableFuture<SendResult<String, Object>> sendFuture = new CompletableFuture<>();
+        when(kafkaTemplate.send(any(ProducerRecord.class))).thenReturn(sendFuture);
+        sendFuture.complete(criarSendResult());
+
+        pedidoCreateProducer.publicar(event);
+
+        ArgumentCaptor<ProducerRecord<String, Object>> captor = ArgumentCaptor.forClass(ProducerRecord.class);
+        org.mockito.Mockito.verify(kafkaTemplate).send(captor.capture());
+        assertThat(captor.getValue().headers().lastHeader("X-Correlation-Id")).isNull();
     }
 
     @Test

@@ -33,7 +33,7 @@ public class ClienteResponseConsumer {
             @Payload ClienteResponseEvent event,
             @Header(name = &quot;${app.correlation-id.header}&quot;, required = false) String correlationId) {
         try {
-<span class="pc bpc" id="L36" title="1 of 4 branches missed.">            if (correlationId != null &amp;&amp; !correlationId.isBlank()) {</span>
+<span class="fc bfc" id="L36" title="All 4 branches covered.">            if (correlationId != null &amp;&amp; !correlationId.isBlank()) {</span>
 <span class="fc" id="L37">                CorrelationIdUtil.set(correlationId);</span>
 <span class="fc" id="L38">                MDC.put(&quot;correlationId&quot;, correlationId);</span>
             }

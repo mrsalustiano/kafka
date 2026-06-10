@@ -45,7 +45,7 @@ public class PedidoCreateProducer {
 <span class="fc" id="L45">            ProducerRecord&lt;String, Object&gt; record = new ProducerRecord&lt;&gt;(topic, event.eventId(), event);</span>
 
 <span class="fc" id="L47">            String correlationId = CorrelationIdUtil.get();</span>
-<span class="pc bpc" id="L48" title="1 of 4 branches missed.">            if (correlationId != null &amp;&amp; !correlationId.isBlank()) {</span>
+<span class="fc bfc" id="L48" title="All 4 branches covered.">            if (correlationId != null &amp;&amp; !correlationId.isBlank()) {</span>
 <span class="fc" id="L49">                record.headers().add(new RecordHeader(</span>
                         correlationHeader,
 <span class="fc" id="L51">                        correlationId.getBytes(StandardCharsets.UTF_8)</span>

@@ -34,12 +34,12 @@ public class PedidoResponseConsumer {
             @Payload PedidoResponseEvent event,
             @Header(name = &quot;${app.correlation-id.header}&quot;, required = false) String correlationId) {
         try {
-<span class="pc bpc" id="L37" title="2 of 4 branches missed.">            if (correlationId != null &amp;&amp; !correlationId.isBlank()) {</span>
+<span class="pc bpc" id="L37" title="1 of 4 branches missed.">            if (correlationId != null &amp;&amp; !correlationId.isBlank()) {</span>
 <span class="fc" id="L38">                CorrelationIdUtil.set(correlationId);</span>
 <span class="fc" id="L39">                MDC.put(&quot;correlationId&quot;, correlationId);</span>
             }
 
-<span class="pc bpc" id="L42" title="1 of 4 branches missed.">            if (event.eventId() == null || event.eventId().isBlank()) {</span>
+<span class="fc bfc" id="L42" title="All 4 branches covered.">            if (event.eventId() == null || event.eventId().isBlank()) {</span>
 <span class="fc" id="L43">                log.warn(&quot;Evento pedido-response ignorado: eventId ausente&quot;);</span>
 <span class="fc" id="L44">                return;</span>
             }

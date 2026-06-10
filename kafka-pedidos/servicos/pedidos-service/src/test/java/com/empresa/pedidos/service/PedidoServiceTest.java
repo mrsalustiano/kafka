@@ -239,4 +239,54 @@ class PedidoServiceTest {
         assertThatThrownBy(() -> pedidoService.atualizarStatus(1L, new PedidoStatusRequest("FINALIZADO")))
                 .isInstanceOf(NotFoundException.class);
     }
+
+    @Test
+    void criar_quandoPedidoNaoEncontradoAposInsert_deveLancarNotFoundException() {
+        when(clienteRepository.findAtivoById(1L)).thenReturn(Optional.of(Cliente.builder().codigoCliente(1L).ativo("S").build()));
+        when(produtoConsultaService.buscarProdutoAtivo(2L)).thenReturn(produtoCacheDto);
+        when(pedidoRepository.insert(any())).thenReturn(1L);
+        doNothing().when(pedidoCreateProducer).publicar(any());
+        when(pedidoRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> pedidoService.criar(pedidoRequest))
+                .isInstanceOf(NotFoundException.class);
+    }
+
+    @Test
+    void criar_quandoErroProduto_deveLancarDatabaseException() {
+        when(clienteRepository.findAtivoById(1L)).thenReturn(Optional.of(Cliente.builder().codigoCliente(1L).ativo("S").build()));
+        when(produtoConsultaService.buscarProdutoAtivo(2L)).thenThrow(new RuntimeException("redis down"));
+
+        assertThatThrownBy(() -> pedidoService.criar(pedidoRequest))
+                .isInstanceOf(DatabaseException.class);
+    }
+
+    @Test
+    void atualizar_quandoClienteInativo_deveLancarValidationException() {
+        when(pedidoRepository.findById(1L)).thenReturn(Optional.of(pedido));
+        when(clienteRepository.findAtivoById(1L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> pedidoService.atualizar(1L, pedidoRequest))
+                .isInstanceOf(ValidationException.class);
+    }
+
+    @Test
+    void atualizar_quandoErroDb_deveLancarDatabaseException() {
+        when(pedidoRepository.findById(1L)).thenReturn(Optional.of(pedido));
+        when(clienteRepository.findAtivoById(1L)).thenReturn(Optional.of(Cliente.builder().codigoCliente(1L).ativo("S").build()));
+        when(produtoConsultaService.buscarProdutoAtivo(2L)).thenReturn(produtoCacheDto);
+        when(pedidoRepository.update(any())).thenThrow(new RuntimeException("db down"));
+
+        assertThatThrownBy(() -> pedidoService.atualizar(1L, pedidoRequest))
+                .isInstanceOf(DatabaseException.class);
+    }
+
+    @Test
+    void atualizarStatus_quandoErroDb_deveLancarDatabaseException() {
+        when(pedidoRepository.findById(1L)).thenReturn(Optional.of(pedido));
+        when(pedidoRepository.atualizarStatus(1L, "FINALIZADO")).thenThrow(new RuntimeException("db down"));
+
+        assertThatThrownBy(() -> pedidoService.atualizarStatus(1L, new PedidoStatusRequest("FINALIZADO")))
+                .isInstanceOf(DatabaseException.class);
+    }
 }

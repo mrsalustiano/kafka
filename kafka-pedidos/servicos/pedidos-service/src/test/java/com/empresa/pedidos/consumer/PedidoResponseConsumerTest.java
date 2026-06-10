@@ -74,6 +74,26 @@ class PedidoResponseConsumerTest {
     }
 
     @Test
+    void consumir_quandoEventIdBlank_deveIgnorar() {
+        PedidoResponseEvent eventoBlank = new PedidoResponseEvent("  ", 1L, "FINALIZADO");
+
+        pedidoResponseConsumer.consumir(eventoBlank, "corr-1");
+
+        verify(idempotenciaService, never()).jaProcessado("evt-1");
+        verify(pedidoRepository, never()).atualizarStatus(1L, "FINALIZADO");
+    }
+
+    @Test
+    void consumir_comCorrelationIdBlank_naoDeveSetarCorrelationId() {
+        when(idempotenciaService.jaProcessado("evt-1")).thenReturn(false);
+        when(pedidoRepository.atualizarStatus(1L, "FINALIZADO")).thenReturn(1);
+
+        pedidoResponseConsumer.consumir(event, "  ");
+
+        assertThat(CorrelationIdUtil.get()).isNull();
+    }
+
+    @Test
     void consumir_quandoPedidoNaoEncontrado_deveIgnorar() {
         when(idempotenciaService.jaProcessado("evt-1")).thenReturn(false);
         when(pedidoRepository.atualizarStatus(1L, "FINALIZADO")).thenReturn(0);

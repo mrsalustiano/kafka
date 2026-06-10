@@ -103,6 +103,15 @@ class ClienteResponseConsumerTest {
     }
 
     @Test
+    void consumir_comCorrelationIdBlank_naoDeveSetarCorrelationId() {
+        when(idempotenciaService.jaProcessado("evt-1")).thenReturn(false);
+
+        clienteResponseConsumer.consumir(event, "  ");
+
+        assertThat(CorrelationIdUtil.get()).isNull();
+    }
+
+    @Test
     void consumir_quandoErro_deveLancarKafkaConsumeException() {
         when(idempotenciaService.jaProcessado("evt-1")).thenReturn(false);
         doThrow(new RuntimeException("erro")).when(clienteStatusRepository).upsert(1L, "CRIADO");

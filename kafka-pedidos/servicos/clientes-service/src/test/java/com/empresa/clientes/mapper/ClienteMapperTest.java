@@ -73,4 +73,24 @@ class ClienteMapperTest {
         assertThat(response.codigoCliente()).isEqualTo(1L);
         assertThat(response.status()).isEqualTo("CRIADO");
     }
+
+    @Test
+    void toResponse_quandoNull_deveRetornarNull() {
+        assertThat(mapper.toResponse(null)).isNull();
+    }
+
+    @Test
+    void toResponseList_quandoNull_deveRetornarNull() {
+        assertThat(mapper.toResponseList(null)).isNull();
+    }
+
+    @Test
+    void toStatusResponse_quandoNull_deveRetornarNull() {
+        assertThat(mapper.toStatusResponse(null)).isNull();
+    }
+
+    @Test
+    void toEntity_quandoNull_deveRetornarNull() {
+        assertThat(mapper.toEntity(null)).isNull();
+    }
 }

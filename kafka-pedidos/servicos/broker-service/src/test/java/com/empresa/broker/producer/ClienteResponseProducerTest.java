@@ -79,6 +79,20 @@ class ClienteResponseProducerTest {
     }
 
     @Test
+    void publicar_comCorrelationIdBlank_naoDeveAdicionarHeader() throws Exception {
+        CorrelationIdUtil.set("  ");
+        sendFuture = new CompletableFuture<>();
+        when(kafkaTemplate.send(any(ProducerRecord.class))).thenReturn(sendFuture);
+        sendFuture.complete(criarSendResult());
+
+        clienteResponseProducer.publicar(event);
+
+        ArgumentCaptor<ProducerRecord<String, Object>> captor = ArgumentCaptor.forClass(ProducerRecord.class);
+        org.mockito.Mockito.verify(kafkaTemplate).send(captor.capture());
+        assertThat(captor.getValue().headers().lastHeader("X-Correlation-Id")).isNull();
+    }
+
+    @Test
     void publicar_semCorrelationId_naoDeveAdicionarHeader() throws Exception {
         sendFuture = new CompletableFuture<>();
         when(kafkaTemplate.send(any(ProducerRecord.class))).thenReturn(sendFuture);

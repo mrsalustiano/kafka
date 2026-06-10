@@ -43,6 +43,21 @@ class ProdutoMapperTest {
     }
 
     @Test
+    void toResponse_quandoNull_deveRetornarNull() {
+        assertThat(mapper.toResponse(null)).isNull();
+    }
+
+    @Test
+    void toResponseList_quandoNull_deveRetornarNull() {
+        assertThat(mapper.toResponseList(null)).isNull();
+    }
+
+    @Test
+    void toEntity_quandoNull_deveRetornarNull() {
+        assertThat(mapper.toEntity(null)).isNull();
+    }
+
+    @Test
     void toResponseList_deveMapearLista() {
         Produto produto = Produto.builder().codigoProduto(1L).descricao("A").valor(BigDecimal.ONE)
                 .ativo("S").build();

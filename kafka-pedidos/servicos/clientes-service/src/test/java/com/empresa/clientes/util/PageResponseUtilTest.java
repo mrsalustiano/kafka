@@ -68,4 +68,32 @@ class PageResponseUtilTest {
         assertThatThrownBy(() -> PageResponseUtil.resolveSortDirection("nome,invalid"))
                 .isInstanceOf(ValidationException.class);
     }
+
+    @Test
+    void of_quandoPaginaIntermediaria_deveTerHasNextEHasPrevious() {
+        PageResponse<String> page = PageResponseUtil.of(List.of("a"), 1, 10, 30);
+
+        assertThat(page.hasNext()).isTrue();
+        assertThat(page.hasPrevious()).isTrue();
+        assertThat(page.first()).isFalse();
+        assertThat(page.last()).isFalse();
+    }
+
+    @Test
+    void of_quandoUltimaPagina_deveMarcarLast() {
+        PageResponse<String> page = PageResponseUtil.of(List.of("a"), 2, 10, 25);
+
+        assertThat(page.last()).isTrue();
+        assertThat(page.hasNext()).isFalse();
+    }
+
+    @Test
+    void resolveSortColumn_quandoBlank_deveRetornarPadrao() {
+        assertThat(PageResponseUtil.resolveSortColumn("   ")).isEqualTo("codigo_cliente");
+    }
+
+    @Test
+    void resolveSortDirection_quandoSortSemVirgula_deveRetornarAsc() {
+        assertThat(PageResponseUtil.resolveSortDirection("nome")).isEqualTo("ASC");
+    }
 }
