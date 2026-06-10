@@ -1,0 +1,17 @@
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\test\java\com\empresa\clientes\audit\AuditoriaServiceTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\test\java\com\empresa\clientes\config\ConfigBeansTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\test\java\com\empresa\clientes\config\CorrelationIdFilterTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\test\java\com\empresa\clientes\config\KafkaHealthIndicatorTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\test\java\com\empresa\clientes\config\KafkaPropertiesTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\test\java\com\empresa\clientes\consumer\ClienteResponseConsumerTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\test\java\com\empresa\clientes\controller\ClienteControllerTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\test\java\com\empresa\clientes\exception\ExceptionClassesTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\test\java\com\empresa\clientes\exception\GlobalExceptionHandlerTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\test\java\com\empresa\clientes\mapper\ClienteMapperTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\test\java\com\empresa\clientes\producer\ClienteCreateProducerTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\test\java\com\empresa\clientes\service\ClienteServiceTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\test\java\com\empresa\clientes\service\IdempotenciaServiceTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\test\java\com\empresa\clientes\util\CorrelationIdUtilTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\test\java\com\empresa\clientes\util\CpfUtilTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\test\java\com\empresa\clientes\util\PageResponseUtilTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\clientes-service\src\test\java\com\empresa\clientes\validation\CpfValidatorTest.java

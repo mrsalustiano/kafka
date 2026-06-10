@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PedidoResponseConsumer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pedidos-service</a> &gt; <a href="index.source.html" class="el_package">com.empresa.pedidos.consumer</a> &gt; <span class="el_source">PedidoResponseConsumer.java</span></div><h1>PedidoResponseConsumer.java</h1><pre class="source lang-java linenums">package com.empresa.pedidos.consumer;
+
+import com.empresa.pedidos.audit.AuditoriaService;
+import com.empresa.pedidos.audit.OperacaoAuditoria;
+import com.empresa.pedidos.dto.PedidoResponseEvent;
+import com.empresa.pedidos.exception.KafkaConsumeException;
+import com.empresa.pedidos.repository.PedidoRepository;
+import com.empresa.pedidos.service.IdempotenciaService;
+import com.empresa.pedidos.util.CorrelationIdUtil;
+import com.empresa.pedidos.util.PedidoStatusUtil;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.stereotype.Component;
+
+<span class="fc" id="L19">@Slf4j</span>
+@Component
+@RequiredArgsConstructor
+public class PedidoResponseConsumer {
+
+    private final IdempotenciaService idempotenciaService;
+    private final PedidoRepository pedidoRepository;
+    private final AuditoriaService auditoriaService;
+
+    @KafkaListener(
+            topics = &quot;${app.kafka.topics.pedido-response}&quot;,
+            groupId = &quot;${spring.kafka.consumer.group-id}&quot;,
+            containerFactory = &quot;kafkaListenerContainerFactory&quot;
+    )
+    public void consumir(
+            @Payload PedidoResponseEvent event,
+            @Header(name = &quot;${app.correlation-id.header}&quot;, required = false) String correlationId) {
+        try {
+<span class="pc bpc" id="L37" title="1 of 4 branches missed.">            if (correlationId != null &amp;&amp; !correlationId.isBlank()) {</span>
+<span class="fc" id="L38">                CorrelationIdUtil.set(correlationId);</span>
+<span class="fc" id="L39">                MDC.put(&quot;correlationId&quot;, correlationId);</span>
+            }
+
+<span class="fc bfc" id="L42" title="All 4 branches covered.">            if (event.eventId() == null || event.eventId().isBlank()) {</span>
+<span class="fc" id="L43">                log.warn(&quot;Evento pedido-response ignorado: eventId ausente&quot;);</span>
+<span class="fc" id="L44">                return;</span>
+            }
+
+<span class="fc bfc" id="L47" title="All 2 branches covered.">            if (idempotenciaService.jaProcessado(event.eventId())) {</span>
+<span class="fc" id="L48">                log.warn(&quot;Evento duplicado ignorado: eventId={}&quot;, event.eventId());</span>
+<span class="fc" id="L49">                return;</span>
+            }
+
+<span class="fc" id="L52">            PedidoStatusUtil.validar(event.status());</span>
+
+<span class="fc" id="L54">            int atualizados = pedidoRepository.atualizarStatus(event.codigoPedido(), event.status());</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">            if (atualizados == 0) {</span>
+<span class="fc" id="L56">                log.warn(&quot;Pedido nao encontrado para atualizacao de status: codigoPedido={}&quot;, event.codigoPedido());</span>
+<span class="fc" id="L57">                return;</span>
+            }
+
+<span class="fc" id="L60">            log.info(&quot;Pedido atualizado com id {} para status {}&quot;, event.codigoPedido(), event.status());</span>
+
+<span class="fc" id="L62">            idempotenciaService.registrar(event.eventId());</span>
+<span class="fc" id="L63">            auditoriaService.registrar(</span>
+                    OperacaoAuditoria.PROCESSAMENTO_KAFKA,
+<span class="fc" id="L65">                    event.codigoPedido(),</span>
+<span class="fc" id="L66">                    &quot;Status atualizado via pedido-response: &quot; + event.status() + &quot;, eventId=&quot; + event.eventId()</span>
+            );
+<span class="fc" id="L68">        } catch (Exception ex) {</span>
+<span class="fc" id="L69">            throw new KafkaConsumeException(</span>
+<span class="fc" id="L70">                    &quot;Erro ao processar evento pedido-response: &quot; + event.eventId(), ex</span>
+            );
+        } finally {
+<span class="fc" id="L73">            CorrelationIdUtil.clear();</span>
+<span class="fc" id="L74">            MDC.remove(&quot;correlationId&quot;);</span>
+        }
+<span class="fc" id="L76">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

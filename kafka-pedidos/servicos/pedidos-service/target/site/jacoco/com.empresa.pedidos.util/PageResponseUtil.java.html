@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PageResponseUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pedidos-service</a> &gt; <a href="index.source.html" class="el_package">com.empresa.pedidos.util</a> &gt; <span class="el_source">PageResponseUtil.java</span></div><h1>PageResponseUtil.java</h1><pre class="source lang-java linenums">package com.empresa.pedidos.util;
+
+import com.empresa.pedidos.dto.PageResponse;
+import com.empresa.pedidos.exception.ValidationException;
+
+import java.util.List;
+import java.util.Set;
+
+public final class PageResponseUtil {
+
+<span class="fc" id="L11">    private static final Set&lt;String&gt; ALLOWED_SORT_FIELDS = Set.of(</span>
+            &quot;codigo_pedido&quot;, &quot;data_pedido&quot;, &quot;codigo_cliente&quot;, &quot;codigo_produto&quot;,
+            &quot;status&quot;, &quot;quantidade&quot;, &quot;data_criacao&quot;
+    );
+
+    private PageResponseUtil() {
+    }
+
+    public static &lt;T&gt; PageResponse&lt;T&gt; of(List&lt;T&gt; content, int page, int size, long totalElements) {
+<span class="fc bfc" id="L20" title="All 2 branches covered.">        int totalPages = size == 0 ? 0 : (int) Math.ceil((double) totalElements / size);</span>
+<span class="fc" id="L21">        int numberOfElements = content.size();</span>
+<span class="fc bfc" id="L22" title="All 2 branches covered.">        boolean empty = numberOfElements == 0;</span>
+<span class="fc bfc" id="L23" title="All 2 branches covered.">        boolean first = page == 0;</span>
+<span class="pc bpc" id="L24" title="1 of 4 branches missed.">        boolean last = page &gt;= totalPages - 1 || totalPages == 0;</span>
+<span class="fc bfc" id="L25" title="All 4 branches covered.">        return new PageResponse&lt;&gt;(</span>
+                content,
+                page,
+                size,
+                totalElements,
+                totalPages,
+                numberOfElements,
+                first,
+                last,
+                empty,
+                !last,
+                !first
+        );
+    }
+
+    public static String resolveSortColumn(String sort) {
+<span class="fc bfc" id="L41" title="All 4 branches covered.">        if (sort == null || sort.isBlank()) {</span>
+<span class="fc" id="L42">            return &quot;codigo_pedido&quot;;</span>
+        }
+<span class="fc" id="L44">        String column = sort.split(&quot;,&quot;)[0].trim();</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        if (!ALLOWED_SORT_FIELDS.contains(column)) {</span>
+<span class="fc" id="L46">            throw new ValidationException(&quot;Campo de ordenacao invalido: &quot; + column);</span>
+        }
+<span class="fc" id="L48">        return column;</span>
+    }
+
+    public static String resolveSortDirection(String sort) {
+<span class="fc bfc" id="L52" title="All 4 branches covered.">        if (sort == null || !sort.contains(&quot;,&quot;)) {</span>
+<span class="fc" id="L53">            return &quot;ASC&quot;;</span>
+        }
+<span class="fc" id="L55">        String direction = sort.split(&quot;,&quot;)[1].trim().toUpperCase();</span>
+<span class="pc bpc" id="L56" title="1 of 4 branches missed.">        if (!&quot;ASC&quot;.equals(direction) &amp;&amp; !&quot;DESC&quot;.equals(direction)) {</span>
+<span class="fc" id="L57">            throw new ValidationException(&quot;Direcao de ordenacao invalida: &quot; + direction);</span>
+        }
+<span class="fc" id="L59">        return direction;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

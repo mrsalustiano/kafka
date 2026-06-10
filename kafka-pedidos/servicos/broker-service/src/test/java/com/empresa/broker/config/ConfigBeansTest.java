@@ -1,0 +1,138 @@
+package com.empresa.broker.config;
+
+import com.empresa.broker.repository.AuditoriaRepository;
+import com.empresa.broker.repository.ClienteRepository;
+import com.empresa.broker.repository.MensagemProcessadaRepository;
+import io.swagger.v3.oas.models.OpenAPI;
+import org.jdbi.v3.core.Jdbi;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.TopicPartition;
+import org.springframework.kafka.core.KafkaAdmin;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
+import org.springframework.kafka.listener.DefaultErrorHandler;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import javax.sql.DataSource;
+import java.util.function.BiFunction;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+class ConfigBeansTest {
+
+    @Test
+    void jdbiConfig_deveCriarJdbi() {
+        JdbiConfig config = new JdbiConfig();
+        Jdbi jdbi = config.jdbi(mock(DataSource.class));
+        assertThat(jdbi).isNotNull();
+    }
+
+    @Test
+    void repositoryConfig_deveCriarRepositorios() {
+        RepositoryConfig config = new RepositoryConfig();
+        Jdbi jdbi = mock(Jdbi.class);
+        ClienteRepository clienteRepository = mock(ClienteRepository.class);
+        AuditoriaRepository auditoriaRepository = mock(AuditoriaRepository.class);
+        MensagemProcessadaRepository mensagemProcessadaRepository = mock(MensagemProcessadaRepository.class);
+
+        when(jdbi.onDemand(ClienteRepository.class)).thenReturn(clienteRepository);
+        when(jdbi.onDemand(AuditoriaRepository.class)).thenReturn(auditoriaRepository);
+        when(jdbi.onDemand(MensagemProcessadaRepository.class)).thenReturn(mensagemProcessadaRepository);
+
+        assertThat(config.clienteRepository(jdbi)).isSameAs(clienteRepository);
+        assertThat(config.auditoriaRepository(jdbi)).isSameAs(auditoriaRepository);
+        assertThat(config.mensagemProcessadaRepository(jdbi)).isSameAs(mensagemProcessadaRepository);
+    }
+
+    @Test
+    void openApiConfig_deveCriarOpenApi() {
+        OpenApiConfig config = new OpenApiConfig();
+        OpenAPI openAPI = config.brokerOpenApi();
+        assertThat(openAPI.getInfo().getTitle()).isEqualTo("Broker Service API");
+    }
+
+    @Test
+    void kafkaConfig_deveCriarBeans() {
+        KafkaProperties kafkaProperties = new KafkaProperties(
+                5000,
+                new KafkaProperties.Retry(3, 500L, 2.0),
+                new KafkaProperties.Topics("client-create", "client-create-dlt", "client-response", "client-response-dlt")
+        );
+        KafkaConfig config = new KafkaConfig(kafkaProperties);
+        ReflectionTestUtils.setField(config, "bootstrapServers", "localhost:9092");
+        ReflectionTestUtils.setField(config, "groupId", "broker-service");
+        ReflectionTestUtils.setField(config, "autoOffsetReset", "earliest");
+        ReflectionTestUtils.setField(config, "acks", "all");
+        ReflectionTestUtils.setField(config, "retries", 3);
+
+        KafkaAdmin admin = config.kafkaAdmin();
+        assertThat(admin.getConfigurationProperties()).containsKey("bootstrap.servers");
+
+        var producerFactory = config.producerFactory();
+        assertThat(producerFactory).isNotNull();
+
+        KafkaTemplate<String, Object> kafkaTemplate = config.kafkaTemplate(producerFactory);
+        assertThat(kafkaTemplate).isNotNull();
+
+        var consumerFactory = config.consumerFactory();
+        assertThat(consumerFactory).isNotNull();
+
+        var listenerFactory = config.kafkaListenerContainerFactory(consumerFactory, kafkaTemplate);
+        assertThat(listenerFactory).isNotNull();
+
+        DefaultErrorHandler errorHandler = config.kafkaErrorHandler(kafkaTemplate);
+        assertThat(errorHandler).isNotNull();
+    }
+
+    @Test
+    void kafkaConfig_calcularMaxElapsedTime_deveSomarIntervalos() {
+        KafkaProperties kafkaProperties = new KafkaProperties(
+                5000,
+                new KafkaProperties.Retry(3, 500L, 2.0),
+                new KafkaProperties.Topics("client-create", "client-create-dlt", "client-response", "client-response-dlt")
+        );
+        KafkaConfig config = new KafkaConfig(kafkaProperties);
+
+        assertThat(config.calcularMaxElapsedTime()).isEqualTo(3500L);
+    }
+
+    @Test
+    void kafkaErrorHandler_dlqResolver_deveMapearParaClientCreateDlt() {
+        KafkaProperties kafkaProperties = new KafkaProperties(
+                5000,
+                new KafkaProperties.Retry(3, 500L, 2.0),
+                new KafkaProperties.Topics("client-create", "client-create-dlt", "client-response", "client-response-dlt")
+        );
+        KafkaConfig config = new KafkaConfig(kafkaProperties);
+        ReflectionTestUtils.setField(config, "bootstrapServers", "localhost:9092");
+        ReflectionTestUtils.setField(config, "groupId", "broker-service");
+        ReflectionTestUtils.setField(config, "autoOffsetReset", "earliest");
+        ReflectionTestUtils.setField(config, "acks", "all");
+        ReflectionTestUtils.setField(config, "retries", 3);
+        KafkaTemplate<String, Object> kafkaTemplate = config.kafkaTemplate(config.producerFactory());
+        DefaultErrorHandler errorHandler = config.kafkaErrorHandler(kafkaTemplate);
+
+        ConsumerRecord<String, String> record = new ConsumerRecord<>("client-create", 3, 0L, "k", "v");
+        TopicPartition partition = extrairTopicoDlt(errorHandler, record);
+
+        assertThat(partition.topic()).isEqualTo("client-create-dlt");
+        assertThat(partition.partition()).isEqualTo(3);
+    }
+
+    @SuppressWarnings("unchecked")
+    private TopicPartition extrairTopicoDlt(DefaultErrorHandler errorHandler, ConsumerRecord<String, String> record) {
+        Object tracker = ReflectionTestUtils.getField(errorHandler, "failureTracker");
+        DeadLetterPublishingRecoverer dltRecoverer =
+                (DeadLetterPublishingRecoverer) ReflectionTestUtils.invokeMethod(tracker, "getRecoverer");
+        BiFunction<ConsumerRecord<?, ?>, Exception, TopicPartition> resolver =
+                (BiFunction<ConsumerRecord<?, ?>, Exception, TopicPartition>)
+                        ReflectionTestUtils.getField(dltRecoverer, "destinationResolver");
+        return resolver.apply(record, new RuntimeException("dlq"));
+    }
+}

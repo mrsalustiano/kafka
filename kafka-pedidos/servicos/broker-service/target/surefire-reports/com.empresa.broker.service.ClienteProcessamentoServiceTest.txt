@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.empresa.broker.service.ClienteProcessamentoServiceTest
+-------------------------------------------------------------------------------
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.079 s -- in com.empresa.broker.service.ClienteProcessamentoServiceTest

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RepositoryConfig.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pedidos-service</a> &gt; <a href="index.source.html" class="el_package">com.empresa.pedidos.config</a> &gt; <span class="el_source">RepositoryConfig.java</span></div><h1>RepositoryConfig.java</h1><pre class="source lang-java linenums">package com.empresa.pedidos.config;
+
+import com.empresa.pedidos.repository.AuditoriaRepository;
+import com.empresa.pedidos.repository.ClienteRepository;
+import com.empresa.pedidos.repository.MensagemProcessadaRepository;
+import com.empresa.pedidos.repository.PedidoRepository;
+import com.empresa.pedidos.repository.ProdutoRepository;
+import org.jdbi.v3.core.Jdbi;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+<span class="fc" id="L13">public class RepositoryConfig {</span>
+
+    @Bean
+    public PedidoRepository pedidoRepository(Jdbi jdbi) {
+<span class="fc" id="L17">        return jdbi.onDemand(PedidoRepository.class);</span>
+    }
+
+    @Bean
+    public ClienteRepository clienteRepository(Jdbi jdbi) {
+<span class="fc" id="L22">        return jdbi.onDemand(ClienteRepository.class);</span>
+    }
+
+    @Bean
+    public ProdutoRepository produtoRepository(Jdbi jdbi) {
+<span class="fc" id="L27">        return jdbi.onDemand(ProdutoRepository.class);</span>
+    }
+
+    @Bean
+    public AuditoriaRepository auditoriaRepository(Jdbi jdbi) {
+<span class="fc" id="L32">        return jdbi.onDemand(AuditoriaRepository.class);</span>
+    }
+
+    @Bean
+    public MensagemProcessadaRepository mensagemProcessadaRepository(Jdbi jdbi) {
+<span class="fc" id="L37">        return jdbi.onDemand(MensagemProcessadaRepository.class);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

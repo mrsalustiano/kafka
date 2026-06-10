@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProdutoService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">produtos-service</a> &gt; <a href="index.source.html" class="el_package">com.empresa.produtos.service</a> &gt; <span class="el_source">ProdutoService.java</span></div><h1>ProdutoService.java</h1><pre class="source lang-java linenums">package com.empresa.produtos.service;
+
+import com.empresa.produtos.audit.AuditoriaService;
+import com.empresa.produtos.audit.OperacaoAuditoria;
+import com.empresa.produtos.cache.ProdutoCacheService;
+import com.empresa.produtos.dto.PageResponse;
+import com.empresa.produtos.dto.ProdutoRequest;
+import com.empresa.produtos.dto.ProdutoResponse;
+import com.empresa.produtos.entity.Produto;
+import com.empresa.produtos.exception.DatabaseException;
+import com.empresa.produtos.exception.NotFoundException;
+import com.empresa.produtos.exception.ValidationException;
+import com.empresa.produtos.mapper.ProdutoMapper;
+import com.empresa.produtos.repository.ProdutoRepository;
+import com.empresa.produtos.util.PageResponseUtil;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+
+<span class="fc" id="L24">@Slf4j</span>
+@Service
+@RequiredArgsConstructor
+public class ProdutoService {
+
+    private final ProdutoRepository produtoRepository;
+    private final ProdutoMapper produtoMapper;
+    private final ProdutoCacheService produtoCacheService;
+    private final AuditoriaService auditoriaService;
+
+    @Transactional
+    public ProdutoResponse criar(ProdutoRequest request) {
+        try {
+<span class="fc" id="L37">            Produto produto = produtoMapper.toEntity(request);</span>
+<span class="fc" id="L38">            long id = produtoRepository.insert(produto);</span>
+<span class="fc" id="L39">            Produto salvo = produtoRepository.findAtivoById(id)</span>
+<span class="fc" id="L40">                    .orElseThrow(() -&gt; new NotFoundException(&quot;Produto nao encontrado apos criacao&quot;));</span>
+<span class="fc" id="L41">            ProdutoResponse response = produtoMapper.toResponse(salvo);</span>
+<span class="fc" id="L42">            produtoCacheService.salvarProduto(response);</span>
+<span class="fc" id="L43">            recarregarCacheCompleto();</span>
+<span class="fc" id="L44">            auditoriaService.registrar(OperacaoAuditoria.CREATE, id, &quot;Produto criado: &quot; + request.descricao());</span>
+<span class="fc" id="L45">            return response;</span>
+<span class="fc" id="L46">        } catch (NotFoundException ex) {</span>
+<span class="fc" id="L47">            throw ex;</span>
+<span class="fc" id="L48">        } catch (Exception ex) {</span>
+<span class="fc" id="L49">            throw new DatabaseException(&quot;Erro ao criar produto&quot;, ex);</span>
+        }
+    }
+
+    public ProdutoResponse buscarPorId(Long id) {
+<span class="fc" id="L54">        Optional&lt;ProdutoResponse&gt; cache = produtoCacheService.buscarPorId(id);</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">        if (cache.isPresent()) {</span>
+<span class="fc" id="L56">            log.debug(&quot;Produto {} encontrado no Redis&quot;, id);</span>
+<span class="fc" id="L57">            return cache.get();</span>
+        }
+
+        try {
+<span class="fc" id="L61">            Produto produto = produtoRepository.findAtivoById(id)</span>
+<span class="fc" id="L62">                    .orElseThrow(() -&gt; new NotFoundException(&quot;Produto nao encontrado: &quot; + id));</span>
+<span class="fc" id="L63">            ProdutoResponse response = produtoMapper.toResponse(produto);</span>
+<span class="fc" id="L64">            produtoCacheService.salvarProduto(response);</span>
+<span class="fc" id="L65">            return response;</span>
+<span class="fc" id="L66">        } catch (NotFoundException ex) {</span>
+<span class="fc" id="L67">            throw ex;</span>
+<span class="fc" id="L68">        } catch (Exception ex) {</span>
+<span class="fc" id="L69">            throw new DatabaseException(&quot;Erro ao buscar produto: &quot; + id, ex);</span>
+        }
+    }
+
+    public PageResponse&lt;ProdutoResponse&gt; listar(int page, int size, String sort) {
+        try {
+<span class="fc" id="L75">            String sortColumn = PageResponseUtil.resolveSortColumn(sort);</span>
+<span class="fc" id="L76">            String sortDirection = PageResponseUtil.resolveSortDirection(sort);</span>
+<span class="fc" id="L77">            long offset = (long) page * size;</span>
+<span class="fc" id="L78">            List&lt;Produto&gt; produtos = produtoRepository.findAllAtivosPaginado(sortColumn, sortDirection, size, offset);</span>
+<span class="fc" id="L79">            long total = produtoRepository.countAtivos();</span>
+<span class="fc" id="L80">            List&lt;ProdutoResponse&gt; content = produtoMapper.toResponseList(produtos);</span>
+<span class="fc" id="L81">            return PageResponseUtil.of(content, page, size, total);</span>
+<span class="fc" id="L82">        } catch (ValidationException ex) {</span>
+<span class="fc" id="L83">            throw ex;</span>
+<span class="fc" id="L84">        } catch (Exception ex) {</span>
+<span class="fc" id="L85">            throw new DatabaseException(&quot;Erro ao listar produtos&quot;, ex);</span>
+        }
+    }
+
+    @Transactional
+    public ProdutoResponse atualizar(Long id, ProdutoRequest request) {
+        try {
+<span class="fc" id="L92">            Produto existente = produtoRepository.findAtivoById(id)</span>
+<span class="fc" id="L93">                    .orElseThrow(() -&gt; new NotFoundException(&quot;Produto nao encontrado: &quot; + id));</span>
+<span class="fc" id="L94">            existente.setDescricao(request.descricao());</span>
+<span class="fc" id="L95">            existente.setValor(request.valor());</span>
+<span class="fc" id="L96">            int atualizados = produtoRepository.update(existente);</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">            if (atualizados == 0) {</span>
+<span class="fc" id="L98">                throw new NotFoundException(&quot;Produto nao encontrado: &quot; + id);</span>
+            }
+<span class="fc" id="L100">            Produto atualizado = produtoRepository.findAtivoById(id)</span>
+<span class="fc" id="L101">                    .orElseThrow(() -&gt; new NotFoundException(&quot;Produto nao encontrado: &quot; + id));</span>
+<span class="fc" id="L102">            ProdutoResponse response = produtoMapper.toResponse(atualizado);</span>
+<span class="fc" id="L103">            produtoCacheService.salvarProduto(response);</span>
+<span class="fc" id="L104">            recarregarCacheCompleto();</span>
+<span class="fc" id="L105">            auditoriaService.registrar(OperacaoAuditoria.UPDATE, id, &quot;Produto atualizado: &quot; + request.descricao());</span>
+<span class="fc" id="L106">            return response;</span>
+<span class="fc" id="L107">        } catch (NotFoundException ex) {</span>
+<span class="fc" id="L108">            throw ex;</span>
+<span class="fc" id="L109">        } catch (Exception ex) {</span>
+<span class="fc" id="L110">            throw new DatabaseException(&quot;Erro ao atualizar produto: &quot; + id, ex);</span>
+        }
+    }
+
+    @Transactional
+    public void excluirLogicamente(Long id) {
+        try {
+<span class="fc" id="L117">            produtoRepository.findAtivoById(id)</span>
+<span class="fc" id="L118">                    .orElseThrow(() -&gt; new NotFoundException(&quot;Produto nao encontrado: &quot; + id));</span>
+<span class="fc" id="L119">            int desativados = produtoRepository.desativar(id);</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">            if (desativados == 0) {</span>
+<span class="fc" id="L121">                throw new NotFoundException(&quot;Produto nao encontrado: &quot; + id);</span>
+            }
+<span class="fc" id="L123">            produtoCacheService.removerProduto(id);</span>
+<span class="fc" id="L124">            recarregarCacheCompleto();</span>
+<span class="fc" id="L125">            auditoriaService.registrar(OperacaoAuditoria.DELETE, id, &quot;Exclusao logica do produto&quot;);</span>
+<span class="fc" id="L126">        } catch (NotFoundException ex) {</span>
+<span class="fc" id="L127">            throw ex;</span>
+<span class="fc" id="L128">        } catch (Exception ex) {</span>
+<span class="fc" id="L129">            throw new DatabaseException(&quot;Erro ao excluir produto: &quot; + id, ex);</span>
+<span class="fc" id="L130">        }</span>
+<span class="fc" id="L131">    }</span>
+
+    public void recarregarCacheCompleto() {
+        try {
+<span class="fc" id="L135">            List&lt;Produto&gt; produtos = produtoRepository.findAllAtivos();</span>
+<span class="fc" id="L136">            List&lt;ProdutoResponse&gt; responses = produtoMapper.toResponseList(produtos);</span>
+<span class="fc" id="L137">            produtoCacheService.salvarTodos(responses);</span>
+<span class="fc" id="L138">            log.info(&quot;Cache de produtos recarregado com {} registros&quot;, responses.size());</span>
+<span class="fc" id="L139">        } catch (Exception ex) {</span>
+<span class="fc" id="L140">            log.warn(&quot;Falha ao recarregar cache completo de produtos: {}&quot;, ex.getMessage());</span>
+<span class="fc" id="L141">        }</span>
+<span class="fc" id="L142">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,17 @@
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\produtos-service\src\test\java\com\empresa\produtos\audit\AuditoriaServiceTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\produtos-service\src\test\java\com\empresa\produtos\cache\CacheKeyConstantsTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\produtos-service\src\test\java\com\empresa\produtos\cache\ProdutoCacheLoaderTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\produtos-service\src\test\java\com\empresa\produtos\cache\ProdutoCacheServiceTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\produtos-service\src\test\java\com\empresa\produtos\config\CachePropertiesTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\produtos-service\src\test\java\com\empresa\produtos\config\ConfigBeansTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\produtos-service\src\test\java\com\empresa\produtos\config\CorrelationIdFilterTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\produtos-service\src\test\java\com\empresa\produtos\config\KafkaHealthIndicatorTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\produtos-service\src\test\java\com\empresa\produtos\config\RedisPropertiesTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\produtos-service\src\test\java\com\empresa\produtos\controller\ProdutoControllerTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\produtos-service\src\test\java\com\empresa\produtos\exception\ExceptionClassesTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\produtos-service\src\test\java\com\empresa\produtos\exception\GlobalExceptionHandlerTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\produtos-service\src\test\java\com\empresa\produtos\mapper\ProdutoMapperTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\produtos-service\src\test\java\com\empresa\produtos\scheduler\ProdutoCacheSchedulerTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\produtos-service\src\test\java\com\empresa\produtos\service\ProdutoServiceTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\produtos-service\src\test\java\com\empresa\produtos\util\CorrelationIdUtilTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\produtos-service\src\test\java\com\empresa\produtos\util\PageResponseUtilTest.java

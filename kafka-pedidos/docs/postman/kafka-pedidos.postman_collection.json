@@ -1,0 +1,338 @@
+{
+  "info": {
+    "name": "kafka-pedidos",
+    "description": "Coleção para testes locais das APIs REST do projeto kafka-pedidos.\n\nPré-requisitos:\n1. Infraestrutura Docker rodando (scripts/start.bat)\n2. Microsserviços nas portas 8081-8084\n3. Importar environment kafka-pedidos-local",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "correlation_id",
+      "value": "{{$guid}}"
+    }
+  ],
+  "item": [
+    {
+      "name": "Clientes (8081)",
+      "item": [
+        {
+          "name": "Solicitar criação de cliente",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-Correlation-Id", "value": "{{correlation_id}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Cliente Teste\",\n  \"cpf\": \"529.982.247-25\",\n  \"endereco\": \"Rua Exemplo, 100\",\n  \"cep\": \"01310-100\",\n  \"cidade\": \"Sao Paulo\",\n  \"estado\": \"SP\",\n  \"email\": \"cliente@teste.com\",\n  \"telefone\": \"11999999999\"\n}"
+            },
+            "url": "{{clientes_base_url}}/api/v1/clientes"
+          }
+        },
+        {
+          "name": "Buscar cliente por CPF",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-Correlation-Id", "value": "{{correlation_id}}" }
+            ],
+            "url": "{{clientes_base_url}}/api/v1/clientes/cpf/52998224725"
+          }
+        },
+        {
+          "name": "Buscar cliente por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-Correlation-Id", "value": "{{correlation_id}}" }
+            ],
+            "url": "{{clientes_base_url}}/api/v1/clientes/{{cliente_id}}"
+          }
+        },
+        {
+          "name": "Listar clientes",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-Correlation-Id", "value": "{{correlation_id}}" }
+            ],
+            "url": {
+              "raw": "{{clientes_base_url}}/api/v1/clientes?page=0&size=10&sort=nome,asc",
+              "host": ["{{clientes_base_url}}"],
+              "path": ["api", "v1", "clientes"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" },
+                { "key": "sort", "value": "nome,asc" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Atualizar cliente",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-Correlation-Id", "value": "{{correlation_id}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Cliente Atualizado\",\n  \"cpf\": \"52998224725\",\n  \"endereco\": \"Rua Nova, 200\",\n  \"cep\": \"01310-200\",\n  \"cidade\": \"Sao Paulo\",\n  \"estado\": \"SP\",\n  \"email\": \"atualizado@teste.com\",\n  \"telefone\": \"11888888888\"\n}"
+            },
+            "url": "{{clientes_base_url}}/api/v1/clientes/{{cliente_id}}"
+          }
+        },
+        {
+          "name": "Consultar status de criação",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-Correlation-Id", "value": "{{correlation_id}}" }
+            ],
+            "url": "{{clientes_base_url}}/api/v1/clientes/status/{{cliente_id}}"
+          }
+        },
+        {
+          "name": "Excluir cliente (lógico)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "X-Correlation-Id", "value": "{{correlation_id}}" }
+            ],
+            "url": "{{clientes_base_url}}/api/v1/clientes/{{cliente_id}}"
+          }
+        },
+        {
+          "name": "Health check",
+          "request": {
+            "method": "GET",
+            "url": "{{clientes_base_url}}/actuator/health"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Produtos (8082)",
+      "item": [
+        {
+          "name": "Criar produto",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-Correlation-Id", "value": "{{correlation_id}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"descricao\": \"Produto Teste\",\n  \"valor\": 29.90\n}"
+            },
+            "url": "{{produtos_base_url}}/api/v1/produtos"
+          }
+        },
+        {
+          "name": "Buscar produto por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-Correlation-Id", "value": "{{correlation_id}}" }
+            ],
+            "url": "{{produtos_base_url}}/api/v1/produtos/{{produto_id}}"
+          }
+        },
+        {
+          "name": "Listar produtos",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-Correlation-Id", "value": "{{correlation_id}}" }
+            ],
+            "url": {
+              "raw": "{{produtos_base_url}}/api/v1/produtos?page=0&size=10",
+              "host": ["{{produtos_base_url}}"],
+              "path": ["api", "v1", "produtos"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Atualizar produto",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-Correlation-Id", "value": "{{correlation_id}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"descricao\": \"Produto Atualizado\",\n  \"valor\": 39.90\n}"
+            },
+            "url": "{{produtos_base_url}}/api/v1/produtos/{{produto_id}}"
+          }
+        },
+        {
+          "name": "Excluir produto (lógico)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "X-Correlation-Id", "value": "{{correlation_id}}" }
+            ],
+            "url": "{{produtos_base_url}}/api/v1/produtos/{{produto_id}}"
+          }
+        },
+        {
+          "name": "Health check",
+          "request": {
+            "method": "GET",
+            "url": "{{produtos_base_url}}/actuator/health"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Pedidos (8083)",
+      "item": [
+        {
+          "name": "Criar pedido",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-Correlation-Id", "value": "{{correlation_id}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigoCliente\": {{cliente_id}},\n  \"codigoProduto\": {{produto_id}},\n  \"quantidade\": 2\n}"
+            },
+            "url": "{{pedidos_base_url}}/api/v1/pedidos"
+          }
+        },
+        {
+          "name": "Buscar pedido por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-Correlation-Id", "value": "{{correlation_id}}" }
+            ],
+            "url": "{{pedidos_base_url}}/api/v1/pedidos/{{pedido_id}}"
+          }
+        },
+        {
+          "name": "Listar pedidos",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-Correlation-Id", "value": "{{correlation_id}}" }
+            ],
+            "url": {
+              "raw": "{{pedidos_base_url}}/api/v1/pedidos?page=0&size=10",
+              "host": ["{{pedidos_base_url}}"],
+              "path": ["api", "v1", "pedidos"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Atualizar pedido",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-Correlation-Id", "value": "{{correlation_id}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigoCliente\": {{cliente_id}},\n  \"codigoProduto\": {{produto_id}},\n  \"quantidade\": 3\n}"
+            },
+            "url": "{{pedidos_base_url}}/api/v1/pedidos/{{pedido_id}}"
+          }
+        },
+        {
+          "name": "Atualizar status do pedido",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-Correlation-Id", "value": "{{correlation_id}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"FINALIZADO\"\n}"
+            },
+            "url": "{{pedidos_base_url}}/api/v1/pedidos/{{pedido_id}}/status"
+          }
+        },
+        {
+          "name": "Health check",
+          "request": {
+            "method": "GET",
+            "url": "{{pedidos_base_url}}/actuator/health"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Broker (8084)",
+      "item": [
+        {
+          "name": "Health check",
+          "request": {
+            "method": "GET",
+            "url": "{{broker_base_url}}/actuator/health"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cenários de erro",
+      "item": [
+        {
+          "name": "Cliente não encontrado (404)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-Correlation-Id", "value": "{{correlation_id}}" }
+            ],
+            "url": "{{clientes_base_url}}/api/v1/clientes/999999"
+          }
+        },
+        {
+          "name": "Validação inválida - produto (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-Correlation-Id", "value": "{{correlation_id}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"descricao\": \"\",\n  \"valor\": 0\n}"
+            },
+            "url": "{{produtos_base_url}}/api/v1/produtos"
+          }
+        },
+        {
+          "name": "Status de pedido inválido (422)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-Correlation-Id", "value": "{{correlation_id}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"STATUS_INVALIDO\"\n}"
+            },
+            "url": "{{pedidos_base_url}}/api/v1/pedidos/{{pedido_id}}/status"
+          }
+        }
+      ]
+    }
+  ]
+}
