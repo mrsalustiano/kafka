@@ -1,0 +1,10 @@
+com\empresa\broker\config\ConfigBeansTest.class
+com\empresa\broker\producer\ClienteResponseProducerTest.class
+com\empresa\broker\exception\ExceptionClassesTest.class
+com\empresa\broker\service\ClienteProcessamentoServiceTest.class
+com\empresa\broker\audit\AuditoriaServiceTest.class
+com\empresa\broker\config\KafkaPropertiesTest.class
+com\empresa\broker\consumer\ClienteCreateConsumerTest.class
+com\empresa\broker\config\KafkaHealthIndicatorTest.class
+com\empresa\broker\util\CorrelationIdUtilTest.class
+com\empresa\broker\service\IdempotenciaServiceTest.class

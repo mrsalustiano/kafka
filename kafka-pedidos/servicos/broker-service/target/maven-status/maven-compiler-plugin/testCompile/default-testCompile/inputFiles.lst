@@ -1,0 +1,10 @@
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\test\java\com\empresa\broker\audit\AuditoriaServiceTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\test\java\com\empresa\broker\config\ConfigBeansTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\test\java\com\empresa\broker\config\KafkaHealthIndicatorTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\test\java\com\empresa\broker\config\KafkaPropertiesTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\test\java\com\empresa\broker\consumer\ClienteCreateConsumerTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\test\java\com\empresa\broker\exception\ExceptionClassesTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\test\java\com\empresa\broker\producer\ClienteResponseProducerTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\test\java\com\empresa\broker\service\ClienteProcessamentoServiceTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\test\java\com\empresa\broker\service\IdempotenciaServiceTest.java
+D:\DEV\workspace\kafka\kafka-pedidos\servicos\broker-service\src\test\java\com\empresa\broker\util\CorrelationIdUtilTest.java
